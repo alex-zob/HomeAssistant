@@ -1,0 +1,44 @@
+#homekit: #отдаем устройства в аппле
+- filter:
+    include_domains:
+ #     - switch
+ #     - climate
+  #    - sensor
+  #    - binary_sensor
+  #    - lock
+ #     - vacuum
+#      - media_player
+      - light
+      - humidifier
+    include_entities:
+      - sensor.0x158d00040cb32a_temperature
+      - sensor.0x158d00040cb32a_humidity
+      - binary_sensor.0x158d00068aca37_contact
+      - binary_sensor.0x158d00067ff4ad_contact
+      - binary_sensor.0x158d000423b34f_motion
+      - sensor.0x158d000423b34f_illuminance
+      - sensor.a4c138898f05_temperature
+      - sensor.a4c138898f05_humidity
+      - sensor.tec_hum_cor
+      - sensor.temp_cor
+   #   - switch.rozetka
+    #  - media_player.ue40j5530
+      - cover.lazyroll_4dc741
+      - vacuum.mijia_v2_38d7_robot_cleaner
+      - climate.cubee_th123w_7869_thermostat
+    #  - lock.signalizatsiia_starline_security
+     # - media_player.yandex_station_ff98f0293d539c959187ecd2
+   #   - media_player.yandex_station_04207894c12008280310
+    exclude_entities:
+      - light.deerma_jsq5_c8cc_indicator_light
+      - light.wled_lamp
+#   entity_config:
+#     binary_sensor.domofon_incoming_call:
+#       linked_doorbell_sensor: binary_sensor.domofon_incoming_call
+#     media_player.ue40j5530:
+#       name: Телевизор
+#       feature_list:
+#         - feature: on_off
+#   #       - feature: play_pause
+#   #       - feature: play_stop
+#         - feature: toggle_mute

@@ -1,0 +1,137 @@
+---
+button_card_templates: !include_dir_merge_named "../../custom_components/ui_lovelace_minimalist/__ui_minimalist__/ulm_templates/"
+
+title: "Зал"
+theme: "minimalist-desktop"
+background: "var(--background-image)"
+# views: !include_dir_merge_list "views/"
+views:
+  - title: "Example View"
+    path: 0
+    icon: "mdi:flower"
+    cards:
+    - type: horizontal-stack
+      cards:   
+        - type: 'custom:button-card'
+          template: chip_back
+          variables:
+            ulm_chip_back_path: /ui-lovelace-minimalist/0
+        - type: 'custom:button-card'
+          template: chip_icon_state
+          variables:
+            ulm_chip_icon_state_icon: '🌡'
+            ulm_chip_icon_state_entity: sensor.a4c138898f05_temperature
+        - type: 'custom:button-card'
+          template: chip_icon_state
+          variables:
+            ulm_chip_icon_state_icon: '💧'
+            ulm_chip_icon_state_entity: sensor.a4c138898f05_humidity
+
+    - type: 'custom:button-card'
+      template: card_graph
+      entity: sensor.a4c138898f05_temperature
+      variables:
+        ulm_card_graph_color: "var(--google-blue)"
+        ulm_card_graph_name: Изменения температуры за сутки
+        ulm_card_graph_entity: sensor.a4c138898f05_temperature
+        ulm_card_graph_type: fill
+        ulm_card_graph_hours: 24
+        # - type: 'custom:button-card'
+        #   template: card_graph
+        #   variables:
+        #     ulm_card_graph_color: "var(--google-blue)"
+        #     ulm_card_graph_name: Изменения влажности
+        #     ulm_card_graph_entity: sensor.jsq5_cloud_820876_humidity
+        #     ulm_card_graph_type: fill
+        #     ulm_card_graph_hours: 24
+    - type: horizontal-stack
+      cards:   
+        - type: custom:button-card
+          template: custom_card_httpedo13_thermostat_with_buttons
+          variables:
+            entity: climate.cubee_th123w_7869_thermostat
+            name: Термостат
+        - type: custom:button-card
+          template: custom_card_httpedo13_humidifier_with_buttons
+          variables:
+            entity: humidifier.deerma_jsq5_c8cc_humidifier
+            name: Увлажнитель
+    - type: 'custom:button-card'
+      template: card_title
+    - type: horizontal-stack
+      cards:    
+        - type: "custom:button-card"
+          template:
+            - card_light
+          entity: light.wled
+          variables:
+            ulm_card_light_enable_collapse: true
+            ulm_card_light_enable_slider: false
+            ulm_card_light_enable_color: false
+            ulm_card_light_force_background_color: true
+            ulm_card_light_enable_popup: true
+        - type: "custom:button-card"
+          template:
+            - card_light
+          entity: light.svet_v_zale
+          variables:
+            ulm_card_light_enable_collapse: true
+            ulm_card_light_enable_slider: false
+            ulm_card_light_enable_color: false
+            ulm_card_light_force_background_color: true
+            ulm_card_light_enable_popup: true
+        - type: "custom:button-card"
+          template:
+            - card_light
+          entity: light.wled_lamp
+          variables:
+            ulm_card_light_enable_collapse: true
+            ulm_card_light_enable_slider: false
+            ulm_card_light_enable_color: false
+            ulm_card_light_force_background_color: true
+            ulm_card_light_enable_popup: true
+    - type: 'custom:button-card'
+      template: card_title
+    - type: horizontal-stack
+      cards: 
+        - type: "custom:button-card"
+          template:
+            - card_media_player
+            - popup_media_player
+          entity: media_player.yandex_station_04207894c12008280310    
+        - type: "custom:button-card"
+          template:
+            - card_media_player
+            - popup_media_player
+          entity: media_player.televizor
+    - type: 'custom:button-card'
+      template: card_title
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    

@@ -1,0 +1,7 @@
+---
+ulm_language_variables:
+  variables:
+    ulm_morning: "Доброе утро"
+    ulm_afternoon: "Добрый день"
+    ulm_evening: "Добрый вечер"
+    ulm_hello: "Привет"

@@ -1,0 +1,3640 @@
+- id: 06eaf74f6e9343e297de5d4911b30229
+  alias: Telegram /domofon_open callback
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /domofon_open
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.domofon_incoming_call
+        state: 'on'
+      sequence:
+      - service: button.press
+        target:
+          entity_id: button.domofon_accept_call
+        data: {}
+      - service: telegram_bot.edit_message
+        data_template:
+          message_id: last
+          chat_id: '{{ trigger.event.data.chat_id }}'
+          message: Входящий звонок в домофон принят. Дверь в подъезд уже открываю
+    default:
+    - service: telegram_bot.edit_message
+      data_template:
+        message_id: last
+        chat_id: '{{ trigger.event.data.chat_id }}'
+        message: Был звонок в домофон,но уже его нет. Дверь не открывала
+  initial_state: true
+- id: cb2bcc9d8091433ca668406532525d18
+  alias: Telegram /domofon_reject callback
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /domofon_reject
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.domofon_incoming_call
+        state: 'on'
+      sequence:
+      - service: button.press
+        target:
+          entity_id: button.domofon_reject_call
+        data: {}
+      - service: telegram_bot.edit_message
+        data_template:
+          message_id: last
+          chat_id: '{{ trigger.event.data.chat_id }}'
+          message: Входящий вызов отклонен. Дверь в подъезд не открываю
+    default:
+    - service: telegram_bot.edit_message
+      data_template:
+        message_id: last
+        chat_id: '{{ trigger.event.data.chat_id }}'
+        message: Был звонок в домофон,но уже его нет. Дверь не открывала
+  initial_state: true
+- alias: Domofon opened by button notification
+  initial_state: true
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.domofon_button
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.domofon_incoming_call
+    state: 'on'
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Входящий звонок в домофон принят с трубки
+  id: b3b9c0a1f1eb44b4b488d4ae1540f413
+- id: '1631733436098'
+  alias: Включить свет на кухне по датчику движения
+  description: свет включается на кухне когда идешь в туалет
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.0x158d000423b34f_motion
+    from: 'off'
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  condition:
+  - condition: time
+    after: '23:00'
+    before: 07:30
+  action:
+  - type: turn_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1631733836176'
+  alias: Выключить свет на кухне по датчику
+  description: свет выключается если нет движения в течении 5 минут
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.0x158d000423b34f_motion
+    from: 'on'
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  condition:
+  - condition: time
+    after: '23:05'
+    before: 07:15
+  action:
+  - type: turn_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1631734473339'
+  alias: Включить свет кухни из зала
+  description: По левой кноке в зале включается свет на кухне
+  trigger:
+  - platform: device
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    domain: xiaomi_gateway3
+    type: button_1
+    action: single
+  condition:
+  - condition: device
+    type: is_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1631734569147'
+  alias: Выключить свет кухни из зала
+  description: По нажатию левой кнопки в зале свет на кухне выключается если был включен
+  trigger:
+  - platform: device
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    domain: xiaomi_gateway3
+    type: button_1
+    action: single
+  condition:
+  - condition: device
+    type: is_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  action:
+  - type: turn_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1631734867220'
+  alias: Включение света по приходу домой до 20
+  description: Свет включиться если открылась входная дверь
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.0x158d00067ff4ad_contact
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: and
+    conditions:
+    - condition: device
+      type: is_off
+      device_id: c5861245f86ee3d5474fa63c37add5cb
+      entity_id: switch.0x158d0004330af1_channel_2
+      domain: switch
+    - condition: device
+      type: is_off
+      device_id: d31e6b380d92db814e44d0ba0cbaee8b
+      entity_id: switch.0x158d00053ee70c_switch
+      domain: switch
+    - type: is_no_motion
+      condition: device
+      device_id: 3b454c7dcb9b5fe9cc18f1bd5872ae90
+      entity_id: binary_sensor.0x158d000423b34f_motion
+      domain: binary_sensor
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+        milliseconds: 0
+    - condition: time
+      before: '20:00'
+      after: '18:30'
+  action:
+  - service: light.turn_on
+    data: {}
+    target:
+      entity_id:
+      - light.svet_v_koridore
+      - light.svet_na_kukhne
+  mode: single
+- id: '1631810146895'
+  alias: Включение ночника с выключателя
+  description: включает ночник с левой кнопки выключателя
+  trigger:
+  - platform: device
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    domain: xiaomi_gateway3
+    type: button_1
+    action: double
+  condition:
+  - condition: device
+    type: is_off
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  - type: turn_off
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  mode: single
+- id: '1631810330524'
+  alias: Выключение ночника
+  description: Выключить ночник с левой кнопки*2 выключателя в зале
+  trigger:
+  - platform: device
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    domain: xiaomi_gateway3
+    type: button_1
+    action: double
+  condition:
+  - condition: device
+    type: is_on
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  - type: turn_off
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  mode: single
+- id: telegram-control-pannel-start
+  alias: Стартовая страница бота Телеграм
+  trigger:
+  - platform: event
+    event_type: telegram_command
+    event_data:
+      command: /start
+  - platform: event
+    event_type: telegram_text
+    event_data:
+      text: Бот
+  - platform: event
+    event_type: telegram_text
+    event_data:
+      text: Меню
+  action:
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      message: "{{ [ \"Приветик, я Алиса. Чем помочь?\", \"Давно не виделись! Хотите
+        узнать погоду на окном? Или может быть включить свет в зале?\", \"Доброго
+        дня, я Алиса! Что будем делать?\" ] | random }}       \n"
+      data:
+      inline_keyboard:
+      - '{{"\U0001F4A1"}} Освещение:/lights, {{"\U0001F68C"}} Транспорт:/bus'
+      - '{{"\U0001F321"}} Термостат:/thermostat, {{"\U0001F9F9"}} Уборка:/vacuum'
+      - '{{"\U0001F4F2"}} Домофон:/donfon, {{"\U0001F4FA"}} Мультимедиа:/tv'
+      - Сделать фото c камеры:/camera
+      - "\U0001F698 Машина:/avto"
+      - '{{"\U0001F5D9"}} Закрыть меню:/close'
+  initial_state: true
+  mode: single
+- id: telegram_weather
+  alias: Telegram - домофон
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /donfon
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Домофон
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: 'Настройки домофона:'
+      message: '----------------------
+
+
+        Сейчас:
+
+
+        {{"\U0001F3E0"}} Звук на домофоне - {{ ''выключен'' if is_state(''switch.domofon_mute_sound'',
+        ''on'') else
+
+        ''включен'' }}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F507" }} Выключить звук:/donfon1, {{"\U0001F50a"}} Включить звук:/donfon2'
+      - ВЫКЛ автоприем:/donfon3, ВКЛ автоприем:/donfon4
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631820176174'
+  alias: Telegram - Транспорт
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /bus
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Транспорт
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: Название остановки "{{state_attr('sensor.v_storonu_tsentra', 'stop_name')}}"
+      message: '---------------------------------
+
+        В сторону брагино ближайщий через {{(states(''sensor.v_storonu_bragino'')
+
+        | as_datetime - now()).total_seconds()  | timestamp_custom(''%-H hr %-M
+
+        min'' if  (states(''sensor.v_storonu_bragino'') | as_datetime -
+
+        now()).total_seconds()  > 3600 else ''%-M мин'', false) }}
+
+        18 автобус в {{state_attr(''sensor.v_storonu_bragino'', ''18'')|first}}
+
+        49 маршрутка в {{state_attr(''sensor.v_storonu_bragino'', ''49'')|first}}
+
+        ...
+
+        В сторону центра ближайщий через {{(states(''sensor.v_storonu_tsentra'') |
+
+        as_datetime - now()).total_seconds()  | timestamp_custom(''%-H hr %-M
+
+        min'' if  (states(''sensor.v_storonu_tsentra'') | as_datetime -
+
+        now()).total_seconds()  > 3600 else ''%-M мин'', false) }}
+
+        18 автобус в {{state_attr(''sensor.v_storonu_tsentra'', ''18'')|first}}
+
+        49 маршрутка в {{state_attr(''sensor.v_storonu_tsentra'', ''49'')|first}}
+
+        '
+      inline_keyboard: '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631897957418'
+  alias: Telegram - Свет
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /lights
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Свет
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Где включить или выключить свет? '
+      message: '----------------------
+
+        Сейчас:
+
+        {{"\U0001F3E0"}} Свет на кухне {{''включен'' if is_state(''switch.0x158d00053ee70c_switch'',
+        ''on'') else ''выключен''}}
+
+        {{"\U0001F3E0"}} Свет в зале {{''включен'' if is_state(''switch.0x158d0004330af1_channel_2'',
+        ''on'') else ''выключен'' }}
+
+        {{"\U0001F3E0"}} Подстветка {{''включена'' if is_state(''light.wled'', ''on'')
+        else ''выключена''}}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  В зале:/lights1, {{ "\U0001F4A1" }} На кухне:/lights2,
+        {{ "\U0001F4A1" }}  Подсветка:/lights3'
+      - '{{ "\U0001F4F4" }} В зале:/lights4, {{ "\U0001F4F4" }} На  кухне:/lights5,
+        {{ "\U0001F4F4" }}  Подстветка:/lights6'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631898644079'
+  alias: Telegram - старт из меню
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /start1
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Выход в главное меню
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      message: "{{\"\\U0001F4CB\"}}   Панель управления:  \U0001F4AC\n"
+      inline_keyboard:
+      - '{{"\U0001F4A1"}} Освещение:/lights, {{"\U0001F68C"}} Транспорт:/bus'
+      - '{{"\U0001F321"}} Термостат:/thermostat, {{"\U0001F9F9"}} Уборка:/vacuum'
+      - '{{"\U0001F4F2"}} Домофон:/donfon, {{"\U0001F4FA"}} Мультимедиа:/tv'
+      - Сделать фото c камеры:/camera
+      - "\U0001F698 Машина:/avto"
+      - '{{"\U0001F5D9"}} Закрыть меню:/close'
+  initial_state: true
+  mode: single
+- id: '1631901893667'
+  alias: Telegram - включение света на кухне
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /lights2
+  action:
+  - type: turn_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Свет на кухне включен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Где включить или выключить свет? '
+      message: '----------------------
+
+        Сейчас:
+
+        {{"\U0001F3E0"}} Свет на кухне - {{ states(''switch.0x158d00053ee70c_switch'')
+        }}
+
+        {{"\U0001F3E0"}} Свет в зале- {{ states(''switch.0x158d0004330af1_channel_2'')
+        }}
+
+        {{"\U0001F3E0"}} Ночник - {{ states(''switch.rozetka'') }}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  В зале:/lights1, {{ "\U0001F4A1" }} На кухне:/lights2,
+        {{ "\U0001F4A1" }}  Ночник:/lights3'
+      - '{{ "\U0001F4F4" }} В зале:/lights4, {{ "\U0001F4F4" }} На  кухне:/lights5,
+        {{ "\U0001F4F4" }}  Ночник:/lights6'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631902944915'
+  alias: Telegram - выключение света на кухне
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /lights5
+  action:
+  - type: turn_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Свет на кухне выключен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Где включить или выключить свет? '
+      message: '----------------------
+
+        Сейчас:
+
+        {{"\U0001F3E0"}} Свет на кухне {{''включен'' if is_state(''switch.0x158d00053ee70c_switch'',
+        ''on'') else ''выключен''}}
+
+        {{"\U0001F3E0"}} Свет в зале {{''включен'' if is_state(''switch.0x158d0004330af1_channel_2'',
+        ''on'') else ''выключен'' }}
+
+        {{"\U0001F3E0"}} Ночник {{''включен'' if is_state(''switch.rozetkarozetka'',
+        ''on'') else ''выключен''}}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  В зале:/lights1, {{ "\U0001F4A1" }} На кухне:/lights2,
+        {{ "\U0001F4A1" }}  Ночник:/lights3'
+      - '{{ "\U0001F4F4" }} В зале:/lights4, {{ "\U0001F4F4" }} На  кухне:/lights5,
+        {{ "\U0001F4F4" }}  Ночник:/lights6'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631903904646'
+  alias: Telegram - включение света в зале
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /lights1
+  condition: []
+  action:
+  - type: turn_on
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Свет в зале включен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Где включить или выключить свет? '
+      message: '----------------------
+
+        Сейчас:
+
+        {{"\U0001F3E0"}} Свет на кухне {{''включен'' if is_state(''switch.0x158d00053ee70c_switch'',
+        ''on'') else ''выключен''}}
+
+        {{"\U0001F3E0"}} Свет в зале {{''включен'' if is_state(''switch.0x158d0004330af1_channel_2'',
+        ''on'') else ''выключен'' }}
+
+        {{"\U0001F3E0"}} Ночник {{''включен'' if is_state(''switch.rozetkarozetka'',
+        ''on'') else ''выключен''}}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  В зале:/lights1, {{ "\U0001F4A1" }} На кухне:/lights2,
+        {{ "\U0001F4A1" }}  Ночник:/lights3'
+      - '{{ "\U0001F4F4" }} В зале:/lights4, {{ "\U0001F4F4" }} На  кухне:/lights5,
+        {{ "\U0001F4F4" }}  Ночник:/lights6'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631904082529'
+  alias: Telegram - выключение света в зале
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /lights4
+  condition: []
+  action:
+  - type: turn_off
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Свет в зале выключен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Где включить или выключить свет? '
+      message: '----------------------
+
+        Сейчас:
+
+        {{"\U0001F3E0"}} Свет на кухне - {{ states(''switch.0x158d00053ee70c_switch'')
+        }}
+
+        {{"\U0001F3E0"}} Свет в зале- {{ states(''switch.0x158d0004330af1_channel_2'')
+        }}
+
+        {{"\U0001F3E0"}} Ночник - {{ states(''switch.rozetka'') }}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  В зале:/lights1, {{ "\U0001F4A1" }} На кухне:/lights2,
+        {{ "\U0001F4A1" }}  Ночник:/lights3'
+      - '{{ "\U0001F4F4" }} В зале:/lights4, {{ "\U0001F4F4" }} На  кухне:/lights5,
+        {{ "\U0001F4F4" }}  Ночник:/lights6'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631904170647'
+  alias: Telegram - включение ленты
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /lights3
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: light.wled
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Подстветка включена
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Где включить или выключить свет? '
+      message: '----------------------
+
+        Сейчас:
+
+        {{"\U0001F3E0"}} Свет на кухне {{''включен'' if is_state(''switch.0x158d00053ee70c_switch'',
+        ''on'') else ''выключен''}}
+
+        {{"\U0001F3E0"}} Свет в зале {{''включен'' if is_state(''switch.0x158d0004330af1_channel_2'',
+        ''on'') else ''выключен'' }}
+
+        {{"\U0001F3E0"}} Подстветкв {{''включена'' if is_state(''light.wled'', ''on'')
+        else ''выключенаш''}}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  В зале:/lights1, {{ "\U0001F4A1" }} На кухне:/lights2,
+        {{ "\U0001F4A1" }}  Подстветка:/lights3'
+      - '{{ "\U0001F4F4" }} В зале:/lights4, {{ "\U0001F4F4" }} На  кухне:/lights5,
+        {{ "\U0001F4F4" }}  Подстветкащ:/lights6'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631904261066'
+  alias: Telegram - выключение ночника
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /lights6
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Ночник выключен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Где включить или выключить свет? '
+      message: '----------------------
+
+        Сейчас:
+
+        {{"\U0001F3E0"}} Свет на кухне {{''включен'' if is_state(''switch.0x158d00053ee70c_switch'',
+        ''on'') else ''выключен''}}
+
+        {{"\U0001F3E0"}} Свет в зале {{''включен'' if is_state(''switch.0x158d0004330af1_channel_2'',
+        ''on'') else ''выключен'' }}
+
+        {{"\U0001F3E0"}} Ночник {{''включен'' if is_state(''switch.rozetkarozetka'',
+        ''on'') else ''выключен''}}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  В зале:/lights1, {{ "\U0001F4A1" }} На кухне:/lights2,
+        {{ "\U0001F4A1" }}  Ночник:/lights3'
+      - '{{ "\U0001F4F4" }} В зале:/lights4, {{ "\U0001F4F4" }} На  кухне:/lights5,
+        {{ "\U0001F4F4" }}  Ночник:/lights6'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631954934569'
+  alias: Tel термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Термостат
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631955404335'
+  alias: Tel - 20 на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat1
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 20
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Установлена целевая температура 20 С°
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631995878420'
+  alias: Tel - 21 на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat2
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 21
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Установлена целевая температура 21 С°
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631995946276'
+  alias: Tel - 22 на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat3
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 22
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Установлена целевая температура 22 С°
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631995975265'
+  alias: Tel - 23 на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat4
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 23
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Установлена целевая температура 23 С°
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631996013719'
+  alias: Tel - 24 на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat5
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 24
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Установлена целевая температура 24 С°
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1631996044706'
+  alias: Tel - 25 на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat6
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 25
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Установлена целевая температура 25 С°
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632040977047'
+  alias: Tel минус на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat7
+  condition: []
+  action:
+  - service: climate.set_temperature
+    target:
+      device_id: climate.cubee_th123w_7869_thermostat
+    data_template:
+      temperature: '{{states(''sensor.tec_temp_ter'')|float -1}}'
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Целевая температура уменьшена до {{states('sensor.tec_temp_ter')}}
+        С°
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632043508864'
+  alias: Tel плюс на термостат
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /thermostat8
+  condition: []
+  action:
+  - service: climate.set_temperature
+    target:
+      device_id: climate.cubee_th123w_7869_thermostat
+    data_template:
+      temperature: '{{states(''sensor.tec_temp_ter'')|float +1}}'
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Целевая температура увеличена до {{states('sensor.tec_temp_ter')}}
+        С°
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Какую температуру желаете установить?'
+      message: '
+
+        ----------------------
+
+        {{"\U0001F321"}} Сейчас помещении -  {{states(''sensor.0x158d00040cb32a_temperature'')
+        }}
+
+        {{"\U0001F3AF"}} Установлена - {{states(''sensor.tec_temp_ter'')}}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} 20 С°:/thermostat1, {{"\u21a9\ufe0f"}} 21 C°:/thermostat2,
+        {{"\u21a9\ufe0f" }} 24 C°:/thermostat5'
+      - '{{ "\u21a9\ufe0f" }} 22 С°:/thermostat3, {{"\u21a9\ufe0f"}} 23 C°:/thermostat4,
+        {{"\u21a9\ufe0f"}} 25 C°:/thermostat6'
+      - '{{ "\u2796" }} Уменьшить t°:/thermostat7, {{"\u2795"}} Увеличить t°:/thermostat8'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632067427943'
+  alias: Tel пылесос
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /vacuum
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Уборка
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Что сделать с пылесосом?'
+      message: '----------------------
+
+        {{"\U0001F321"}} Пылесос сейчас - {%if is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+        ''docked'') %}на базе{%elif is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+        ''cleaning'')%}убирается{%elif is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+        ''returning'')%}возращается на базу{%elif is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+        ''paused'')%}на паузе{%endif%}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - "▶️ Уборка:/vacuum1, ⏸ Пауза:/vacuum2, \U0001F50C На базу:/vacuum3"
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632075334981'
+  alias: Tel ТВ
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Мультимедиа
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Выберите устройство'
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\U0001F4FA" }} ТВ в зале:/tv1,{{ "\U0001F4FA" }} ТВ на кухне:/tv2 '
+      - '{{ "\U0001F3B5" }} Яндекс.Станция:/tv3,{{ "\U0001F3B6" }} Яндекс.Мини:/tv4'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632080473075'
+  alias: Tel закрыть
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /close
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Меню закрыто
+
+        '
+  mode: single
+- id: '1632081271204'
+  alias: Тестовая для уведомлентюий в телеграм
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  condition: []
+  action:
+  - service: notify.alexey
+    data:
+      message: В комнате холодно! Добавь температуры на термостат
+  mode: single
+- id: '1632165821995'
+  alias: Предупреждение если температура малины больше 65гр
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.cpu_temperature
+    above: '70'
+  condition: []
+  action:
+  - service: notify.group_bot
+    data:
+      message: Сообщение для @alex_zob. Температура малины 70 С°. Подумайте как снизить
+        температуру для защиты от перегрева
+  mode: single
+- id: '1632166920161'
+  alias: Уведомление в телеграм  на запуск HA
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  condition: []
+  action:
+  - service: notify.group_bot
+    data:
+      message: Сообщение дл @alex_zob. Home Assistant запустился
+  mode: single
+- id: '1632241958419'
+  alias: Tel вкл уборка
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /vacuum1
+  condition: []
+  action:
+  - service: vacuum.start
+    target:
+      entity_id: vacuum.mijia_v2_38d7_robot_cleaner
+    data: {}
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Пылесос начал уборку
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Что сделать с пылесосом?'
+      message: '----------------------
+
+        {{"\U0001F321"}} Пылесос сейчас - {%if
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'', ''docked'') %}на базе{%elif
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+
+        ''cleaning'')%}убирается{%elif
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'', ''returning'')%}возращается
+
+        на базу{%elif is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+
+        ''paused'')%}на паузе{%endif%}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - "▶️ Уборка:/vacuum1, ⏸ Пауза:/vacuum2, \U0001F50C На базу:/vacuum3"
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632242349683'
+  alias: Tel выкл уборка
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /vacuum3
+  condition: []
+  action:
+  - service: vacuum.return_to_base
+    data: {}
+    target:
+      entity_id: vacuum.mijia_v2_38d7_robot_cleaner
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Уборка завершена, пылесос отправлен на базу
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Что сделать с пылесосом?'
+      message: '----------------------
+
+        {{"\U0001F321"}} Пылесос сейчас - {%if
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'', ''docked'') %}на базе{%elif
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+
+        ''cleaning'')%}убирается{%elif
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'', ''returning'')%}возращается
+
+        на базу{%elif is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+
+        ''paused'')%}на паузе{%endif%}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - "▶️ Уборка:/vacuum1, ⏸ Пауза:/vacuum2, \U0001F50C На базу:/vacuum3"
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632243256664'
+  alias: Tel пауза уборки
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /vacuum2
+  condition: []
+  action:
+  - service: vacuum.pause
+    target:
+      entity_id: vacuum.mijia_v2_38d7_robot_cleaner
+    data: {}
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Пылесос остановлен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: '{{"\U0001F914"}} Что сделать с пылесосом?'
+      message: '----------------------
+
+        {{"\U0001F321"}} Пылесос сейчас - {%if
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'', ''docked'') %}на базе{%elif
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+
+        ''cleaning'')%}убирается{%elif
+
+        is_state(''vacuum.mijia_v2_38d7_robot_cleaner'', ''returning'')%}возращается
+
+        на базу{%elif is_state(''vacuum.mijia_v2_38d7_robot_cleaner'',
+
+        ''paused'')%}на паузе{%endif%}
+
+        ----------------------
+
+        '
+      inline_keyboard:
+      - "▶️ Уборка:/vacuum1, ⏸ Пауза:/vacuum2, \U0001F50C На базу:/vacuum3"
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1632423774181'
+  alias: Tel ЯндМини
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv4
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Яндекс.Мини
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: 'Громкость сейчас {{states(''sensor.volume_ysm'')}}
+
+        '
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} Уменьшить звук:/tv4_1,{{ "\u21a9\ufe0f" }} Прибавить
+        звук:/tv4_2'
+      - '{{ "\u21a9\ufe0f" }} Остановить:/tv4_3,{{ "\u21a9\ufe0f" }} Продолжи:/tv4_4'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632424219801'
+  alias: Tel ЯндСтанц
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv3
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Яндекс.Станция
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: 'Громкость сейчас {{states(''sensor.volume_ys'')}}
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F509" }} Уменьшить звук:/tv3_1,{{ "\U0001F50A" }} Прибавить звук:/tv3_2'
+      - '{{ "\u23F8" }} Остановить:/tv3_3, {{ "\u25B6" }} Продолжи:/tv3_4'
+      - '{{ "\u23ED" }} След. трек:/tv3_5,{{ "\u23EE" }} Пред. трек:/tv3_6'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632424438611'
+  alias: Tel.ЯСМ минус звук
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv4_1
+  condition: []
+  action:
+  - service: media_player.volume_set
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+    data_template:
+      volume_level: '{{states(''sensor.volume_ysm'')|float - 0.1}}'
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Звук на Яндекс.Станции Мини уменьшен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} Уменьшить звук:/tv4_1,{{ "\u21a9\ufe0f" }} Прибавить
+        звук:/tv4_2'
+      - '{{ "\u21a9\ufe0f" }} Остановить:/tv4_3,{{ "\u21a9\ufe0f" }} Продолжи:/tv4_4'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632504972228'
+  alias: Тест звука ЯС
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: switch.0x158d00053ee70c_switch
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: yandex_station.send_command
+    data:
+      entity_id: media_player.yandex_station_04207894c12008280310
+      command: sendText
+      text: Повтори за мной 'Свет на кухне включëн'
+  mode: single
+- id: '1632505692463'
+  alias: Алиса ответ в телегуу
+  description: ''
+  trigger:
+  - platform: event
+    event_type: yandex_station_response
+  condition: []
+  action:
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.request_id }}'
+      message: '{{ trigger.event.data.text }}'
+  mode: parallel
+  max: 10
+- id: '1632505696023'
+  alias: Алиса вопрос в телегее
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_text
+    event_data: {}
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: timer.alisa_v_telege
+      state: active
+    - condition: template
+      value_template: "{{\"Алиса\" in trigger.event.data.text or \n\"алиса\" in trigger.event.data.text}}\n"
+  action:
+  - service: media_player.volume_set
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+    data:
+      volume_level: 0
+  - service: media_player.play_media
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+    data_template:
+      media_content_id: '{{ trigger.event.data.text }}'
+      media_content_type: question:{{ trigger.event.data.chat_id }}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 40
+      milliseconds: 0
+  - service: media_player.volume_set
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+    data:
+      volume_level: 0.5
+  mode: parallel
+  max: 10
+- id: '1632652842308'
+  alias: Tel.ЯСМ плюс звук
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv4_2
+  condition: []
+  action:
+  - service: media_player.volume_set
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+    data_template:
+      volume_level: '{{states(''sensor.volume_ysm'')|float + 0.1}}'
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Звук на Яндекс.Станции Мини увеличен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} Уменьшить звук:/tv4_1,{{ "\u21a9\ufe0f" }} Прибавить
+        звук:/tv4_2'
+      - '{{ "\u21a9\ufe0f" }} Остановить:/tv4_3,{{ "\u21a9\ufe0f" }} Продолжи:/tv4_4'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632652955592'
+  alias: Tel.ЯС минус звук
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv3_1
+  condition: []
+  action:
+  - service: media_player.volume_set
+    entity_id: media_player.yandex_station_04207894c12008280310
+    data_template:
+      volume_level: '{{states(''sensor.volume_ys'')|float - 0.1}}'
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Звук на Яндекс.Станции уменьшен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\U0001F509" }} Уменьшить звук:/tv3_1,{{ "\U0001F50A" }} Прибавить звук:/tv3_2'
+      - '{{ "\u23F8" }} Остановить:/tv3_3, {{ "\u25B6" }} Продолжи:/tv3_4'
+      - '{{ "\u23ED" }} След. трек:/tv3_5,{{ "\u23EE" }} Пред. трек:/tv3_6'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632653057966'
+  alias: Tel.ЯС плюс звук
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv3_2
+  condition: []
+  action:
+  - service: media_player.volume_set
+    entity_id: media_player.yandex_station_04207894c12008280310
+    data_template:
+      volume_level: '{{states(''sensor.volume_ys'')|float + 0.1}}'
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Звук на Яндекс.Станции увеличен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\U0001F509" }} Уменьшить звук:/tv3_1,{{ "\U0001F50A" }} Прибавить звук:/tv3_2'
+      - '{{ "\u23F8" }} Остановить:/tv3_3, {{ "\u25B6" }} Продолжи:/tv3_4'
+      - '{{ "\u23ED" }} След. трек:/tv3_5,{{ "\u23EE" }} Пред. трек:/tv3_6'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632653474311'
+  alias: Tel.ЯСМ пауза
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv4_3
+  condition: []
+  action:
+  - service: media_player.media_pause
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Остановлено
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} Уменьшить звук:/tv4_1,{{ "\u21a9\ufe0f" }} Прибавить
+        звук:/tv4_2'
+      - '{{ "\u21a9\ufe0f" }} Остановить:/tv4_3,{{ "\u21a9\ufe0f" }} Продолжи:/tv4_4'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632653524396'
+  alias: Tel.ЯСМ продолжи
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv4_4
+  condition: []
+  action:
+  - service: media_player.media_play
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Воспроизведение продолжено
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\u21a9\ufe0f" }} Уменьшить звук:/tv4_1,{{ "\u21a9\ufe0f" }} Прибавить
+        звук:/tv4_2'
+      - '{{ "\u21a9\ufe0f" }} Остановить:/tv4_3,{{ "\u21a9\ufe0f" }} Продолжи:/tv4_4'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632652924389'
+  alias: Tel.ЯС пауза
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv3_3
+  condition: []
+  action:
+  - service: media_player.media_pause
+    entity_id: media_player.yandex_station_04207894c12008280310
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Остановлено
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\U0001F509" }} Уменьшить звук:/tv3_1,{{ "\U0001F50A" }} Прибавить звук:/tv3_2'
+      - '{{ "\u23F8" }} Остановить:/tv3_3, {{ "\u25B6" }} Продолжи:/tv3_4'
+      - '{{ "\u23ED" }} След. трек:/tv3_5,{{ "\u23EE" }} Пред. трек:/tv3_6'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632653030231'
+  alias: Tel.ЯС продолжи
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv3_4
+  condition: []
+  action:
+  - service: media_player.media_play
+    entity_id: media_player.yandex_station_04207894c12008280310
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Воспроизведение продолжено
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\U0001F509" }} Уменьшить звук:/tv3_1,{{ "\U0001F50A" }} Прибавить звук:/tv3_2'
+      - '{{ "\u23F8" }} Остановить:/tv3_3, {{ "\u25B6" }} Продолжи:/tv3_4'
+      - '{{ "\u23ED" }} След. трек:/tv3_5,{{ "\u23EE" }} Пред. трек:/tv3_6'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1632743888923'
+  alias: Сжатие базы
+  trigger:
+  - platform: time
+    at: 01:00
+  condition: []
+  action:
+  - service: recorder.purge
+    data:
+      keep_days: 3
+      repack: true
+  initial_state: true
+  mode: single
+- id: '1634318800142'
+  alias: Темп 21 термостат при открытии окна
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 47beddf6db6b16f3db47c4ba091448db
+    entity_id: binary_sensor.0x158d00068aca37_contact
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 21
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  mode: single
+- id: '1634318877771'
+  alias: темп 24 термостат при закрытии окна
+  description: ''
+  trigger:
+  - type: not_opened
+    platform: device
+    device_id: 47beddf6db6b16f3db47c4ba091448db
+    entity_id: binary_sensor.0x158d00068aca37_contact
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 24
+    target:
+      entity_id: climate.cubee_th123w_7869_thermostat
+  mode: single
+- id: '1634450021448'
+  alias: предупреждение о батарейках
+  description: ''
+  trigger:
+  - type: battery_level
+    platform: device
+    device_id: 1f39bf9cfe82a2ac32c233f95f1bc442
+    entity_id: sensor.0x158d00067ff4ad_battery
+    domain: sensor
+    below: 15
+  - type: battery_level
+    platform: device
+    device_id: 47beddf6db6b16f3db47c4ba091448db
+    entity_id: sensor.0x158d00068aca37_battery
+    domain: sensor
+    below: 15
+  - type: battery_level
+    platform: device
+    device_id: 3b454c7dcb9b5fe9cc18f1bd5872ae90
+    entity_id: sensor.0x158d000423b34f_battery
+    domain: sensor
+    below: 15
+  - type: battery_level
+    platform: device
+    device_id: 02c21b157fba231885e1464c5e5f1130
+    entity_id: sensor.0x158d00040cb32a_battery
+    domain: sensor
+    below: 15
+  condition: []
+  action:
+  - service: notify.alexey
+    data:
+      message: Нужно заменить батарейки в датчиках
+  mode: single
+- id: '1635068174235'
+  alias: Tel - выкл звук ДФ
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /donfon1
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 52768f74662d9ead8bedcde5b1c53ffb
+    entity_id: switch.domofon_mute_sound
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Звук на домофоне выключен
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: 'Настройки домофона:'
+      message: '------------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F507" }} Выключить звук:/donfon1, {{"\U0001F50a"}} Включить звук:/donfon2'
+      - ВЫКЛ автоприем:/donfon3, ВКЛ автоприем:/donfon4
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1635069236424'
+  alias: Tel - вкл звук ДФ
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /donfon2
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 52768f74662d9ead8bedcde5b1c53ffb
+    entity_id: switch.domofon_mute_sound
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Звук на домофоне включен
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: 'Настройки домофона:'
+      message: '------------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F507" }} Выключить звук:/donfon1, {{"\U0001F50a"}} Включить звук:/donfon2'
+      - ВЫКЛ автоприем:/donfon3, ВКЛ автоприем:/donfon4
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1635276157972'
+  alias: Tel - выкл автоприем ДФ
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /donfon3
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 52768f74662d9ead8bedcde5b1c53ffb
+    entity_id: switch.domofon_automatically_open
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Автоприем входящего вызова на домофоне выключен
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: 'Настройки домофона:'
+      message: '------------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F507" }} Выключить звук:/donfon1, {{"\U0001F50a"}} Включить звук:/donfon2'
+      - ВЫКЛ автоприем:/donfon3, ВКЛ автоприем:/donfon4
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1635276385501'
+  alias: Tel - вкл автоприем ДФ
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /donfon4
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 52768f74662d9ead8bedcde5b1c53ffb
+    entity_id: switch.domofon_automatically_open
+    domain: switch
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Автоприем входящего вызова на домофоне включен
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: 'Настройки домофона:'
+      message: '------------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F507" }} Выключить звук:/donfon1, {{"\U0001F50a"}} Включить звук:/donfon2'
+      - ВЫКЛ автоприем:/donfon3, ВКЛ автоприем:/donfon4
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1635795386186'
+  alias: фото с камеры
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /camera
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Ожидайте...
+  - service: camera.snapshot
+    target:
+      entity_id: camera.my_camera
+    data:
+      filename: /config/FOTO/ss_camera.jpg
+  - delay: 00:00:05
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Вот фото, которое вы просили
+  - service: telegram_bot.send_photo
+    data:
+      target: '{{ trigger.event.data.chat_id }}'
+      file: /config/FOTO/ss_camera.jpg
+  mode: single
+- id: '1637518676676'
+  alias: MiBandAlexTracker
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.mi_band_alexey
+  condition: []
+  action:
+  - service: device_tracker.see
+    data_template:
+      dev_id: MiBandAlex
+      location_name: '{{ ''home'' if is_state(''binary_sensor.mi_band_alexey'', ''on'')
+        else ''not_home'' }}'
+  mode: single
+- id: '1637520482688'
+  alias: mibandMaryTracker
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.mi_band_mary
+  condition: []
+  action:
+  - service: device_tracker.see
+    data_template:
+      dev_id: MiBandMary
+      location_name: '{{ ''home'' if is_state(''binary_sensor.mi_band_mary'', ''on'')
+        else ''not_home'' }}'
+  mode: single
+- id: '1638556589634'
+  alias: Tel.ЯС след трек
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv3_5
+  condition: []
+  action:
+  - service: media_player.media_next_track
+    target:
+      device_id: 4e1364fcf994669952ecabefc399bda4
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Следующий трек на Яндекс.Станции включен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\U0001F509" }} Уменьшить звук:/tv3_1,{{ "\U0001F50A" }} Прибавить звук:/tv3_2'
+      - '{{ "\u23F8" }} Остановить:/tv3_3, {{ "\u25B6" }} Продолжи:/tv3_4'
+      - '{{ "\u23ED" }} След. трек:/tv3_5,{{ "\u23EE" }} Пред. трек:/tv3_6'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1638556931833'
+  alias: Tel.ЯС пред трек
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /tv3_6
+  condition: []
+  action:
+  - service: media_player.media_previous_track
+    target:
+      device_id: 4e1364fcf994669952ecabefc399bda4
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: Предыдущий трек на Яндекс.Станции включен
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' Что сделать? '
+      message: '-----------'
+      inline_keyboard:
+      - '{{ "\U0001F509" }} Уменьшить звук:/tv3_1,{{ "\U0001F50A" }} Прибавить звук:/tv3_2'
+      - '{{ "\u23F8" }} Остановить:/tv3_3, {{ "\u25B6" }} Продолжи:/tv3_4'
+      - '{{ "\u23ED" }} След. трек:/tv3_5,{{ "\u23EE" }} Пред. трек:/tv3_6'
+      - '{{ "\u21a9\ufe0f" }} Назад к выбору устройства:/tv'
+  mode: single
+- id: '1640369953560'
+  alias: Включение света по приходу домой после 20
+  description: Свет включиться если открылась входная дверь
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.0x158d00067ff4ad_contact
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: and
+    conditions:
+    - condition: device
+      type: is_off
+      device_id: c5861245f86ee3d5474fa63c37add5cb
+      entity_id: switch.0x158d0004330af1_channel_2
+      domain: switch
+    - condition: device
+      type: is_off
+      device_id: d31e6b380d92db814e44d0ba0cbaee8b
+      entity_id: switch.0x158d00053ee70c_switch
+      domain: switch
+    - type: is_no_motion
+      condition: device
+      device_id: 3b454c7dcb9b5fe9cc18f1bd5872ae90
+      entity_id: binary_sensor.0x158d000423b34f_motion
+      domain: binary_sensor
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+        milliseconds: 0
+    - condition: time
+      before: '23:30'
+      after: '20:00'
+  action:
+  - service: light.turn_on
+    data: {}
+    target:
+      entity_id: light.svet_na_kukhne
+  mode: single
+- id: '1640627118191'
+  alias: Отчет о проверке объектов
+  description: ''
+  use_blueprint:
+    path: gmlupatelli/unavailable_entities_notification.yaml
+    input:
+      time: 09:00:00
+      actions:
+      - service: notify.alexey
+        data:
+          message: "По состоянию на {{states('sensor.time')  список недоступных объектов:
+            \n{{entities}}\n"
+- id: '1640629025318'
+  alias: Отчет о недоступных объектах
+  description: ''
+  use_blueprint:
+    path: gmlupatelli/unavailable_entities_notification.yaml
+    input:
+      time: 09:00:00
+      actions:
+      - service: notify.group_bot
+        data:
+          message: '✅Подготовила отчет для @alex_zob. По состоянию на {{states(''sensor.time'')}}
+            {% if states(''sensor.ned_obj'') == 0 %}недоступных объектов нет. Система
+            работает стабильно. {% else %}недоступные объекты: {{entities}}. {% endif%}
+
+            '
+- id: '1640790328084'
+  alias: Есди изменилось колво недоступных
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.ned_obj
+  condition: []
+  action:
+  - service: notify.alexey
+    data:
+      message: "Количество недоступных объектов {{ states |\nselectattr('state', 'in',
+        ['unavailable']) | list |\ncount }} шт.  \nПодготавливаю отчет, ожидайте...\n"
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - service: automation.trigger
+    target:
+      entity_id: automation.unavailable_entity_detection_notification
+    data: {}
+  mode: single
+- id: '1641928771268'
+  alias: кубик плюс тв
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')>0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '1'
+  action:
+  - service: media_player.volume_up
+    target:
+      entity_id:
+      - media_player.ue40j5530
+  mode: restart
+- id: '1641928960460'
+  alias: кубик минус тв
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')<0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '1'
+  action:
+  - service: media_player.volume_down
+    target:
+      entity_id:
+      - media_player.ue40j5530
+  mode: parallel
+  max: 10
+- id: '1642001020729'
+  alias: кубик плюс счетчик при броске
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    to: free_fall
+  condition: []
+  action:
+  - service: counter.increment
+    target:
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - service: counter.reset
+    target:
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+  mode: restart
+  max: 10
+- id: '1642008908956'
+  alias: кубик сброс при тряске
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    to: shake_air
+  condition: []
+  action:
+  - service: counter.reset
+    target:
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+  mode: single
+- id: '1642009633498'
+  alias: кубик минус ЯС
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')<0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '2'
+  action:
+  - service: media_player.volume_down
+    target:
+      entity_id: media_player.yandex_station_04207894c12008280310
+  mode: parallel
+  max: 10
+- id: '1642009769334'
+  alias: кубик минус ЯСМ
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')<0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '3'
+  action:
+  - service: media_player.volume_down
+    target:
+      entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  mode: parallel
+  max: 10
+- id: '1642009898424'
+  alias: кубик плюс ЯС
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')>0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '2'
+  action:
+  - service: media_player.volume_up
+    target:
+      entity_id: media_player.yandex_station_04207894c12008280310
+  mode: parallel
+  max: 10
+- id: '1642009938158'
+  alias: кубик плюс ЯСМ
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')>0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '3'
+  action:
+  - service: media_player.volume_up
+    target:
+      entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  mode: parallel
+  max: 10
+- id: '1642011460781'
+  alias: кубик минус термостат
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')<0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '4'
+  action:
+  - service: climate.set_temperature
+    target:
+      device_id: b9f792a90027355b263108a72e71923f
+    data_template:
+      temperature: '{{states(''sensor.tec_temp_ter'')|float -1}}'
+  mode: parallel
+  max: 10
+- id: '1642011549444'
+  alias: кубик плюс термостат
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0005305458_action
+    attribute: angle
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{state_attr(''sensor.0x158d0005305458_action'', ''angle'')>0}}'
+    - condition: state
+      entity_id: counter.chislo_podbrasyvanii_kuba_akara
+      state: '4'
+  action:
+  - service: climate.set_temperature
+    target:
+      device_id: b9f792a90027355b263108a72e71923f
+    data_template:
+      temperature: '{{states(''sensor.tec_temp_ter'')|float +1}}'
+  mode: parallel
+  max: 10
+- id: '1642185225919'
+  alias: вкл свет кухни из зала
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0004330af1_action
+    to: button_1_single
+  condition:
+  - condition: device
+    type: is_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1642185522372'
+  alias: выкл кухня из зала
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0004330af1_action
+    to: button_1_single
+  condition:
+  - condition: device
+    type: is_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  action:
+  - type: turn_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1642268157820'
+  alias: вкл ночник с выкл
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0004330af1_action
+    to: button_1_double
+  condition:
+  - condition: device
+    type: is_off
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  - type: turn_off
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  mode: single
+- id: '1642268157820'
+  alias: выкл ночник с выключателя
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0004330af1_action
+    to: button_1_double
+  condition:
+  - condition: device
+    type: is_on
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  action:
+  - type: turn_off
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  - type: turn_on
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  mode: single
+- id: '1642268313069'
+  alias: 'выкл ночник с выкл '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.0x158d0004330af1_action
+    to: button_1_double
+  condition:
+  - condition: device
+    type: is_on
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  - type: turn_off
+    device_id: 6ae2f085351db2bf22e414090642a6a1
+    entity_id: switch.rozetka
+    domain: switch
+  mode: single
+- id: '1643552165154'
+  alias: машина топливо Vesta
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: switch.signalizatsiia_starline_engine
+    domain: switch
+  condition:
+  - type: is_value
+    condition: device
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: sensor.signalizatsiia_starline_fuel_volume
+    domain: sensor
+    below: 15
+  action:
+  - service: notify.group_bot
+    data:
+      message: ❗️В машине мало бензина, осталось всего {{states('sensor.signalizatsiia_starline_fuel_volume')}}%.
+        Не забудьте заправиться.
+  mode: single
+- id: '1643569816926'
+  alias: Telegram - Машина
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avto
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Машина
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Автомобиль - Lada Vesta'
+      message: "----------------------\nСостояние:\n1. Двигатель - {{ 'заведен' if
+        is_state('switch.signalizatsiia_starline_engine', 'on') else 'заглушен' }}\n2.
+        Двери - {{ 'закрыты' if is_state('binary_sensor.signalizatsiia_starline_doors',
+        'off') else 'открыты' }}\n3. Охрана - {{ 'включена' if is_state('lock.signalizatsiia_starline_security',
+        'locked') else 'выключена' }}\n4. Пробег - {{states('sensor.signalizatsiia_starline_mileage')}}
+        km\n5. Ошибки - {{states('sensor.signalizatsiia_starline_obd_errors')}} шт\n6.
+        Температура в салоне - {{states('sensor.signalizatsiia_starline_interior_temperature')}}
+        Гр\n7. Температура двигателя - {{states('sensor.signalizatsiia_starline_engine_temperature')}}
+        Гр\n8. Баланс СИМ карты  - {{states('sensor.signalizatsiia_starline_balance')}}
+        руб \n9. Последняя замена масла была {{states('sensor.signalizatsiia_starline_mileage')|int
+        - states('input_number.probeg_pri_zamene_masla') | int}} км назад. Следующая
+        замена в {{ states('input_number.probeg_pri_zamene_masla') | int + 10000}}
+        км.\n"
+      inline_keyboard:
+      - "\U0001F4A8  Двигатель:/avto1"
+      - "\U0001F6A8 Охрана:/avto2"
+      - ✅  Масло заменено:/maslo_ok
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/start1'
+  mode: single
+- id: '1643570622520'
+  alias: Telegram - охрана
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avto2
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Охрана
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Что сделать?'
+      message: '----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  Поставить в охрану:/avtoOx1'
+      - '{{ "\U0001F4F4" }} Снять с охраны:/avtoOx2'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/avto'
+  mode: single
+- id: '1643571243136'
+  alias: Telegram - двигатель
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avto1
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Двигатель
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Что сделать?'
+      message: '----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  Завести:/avtoDv1'
+      - '{{ "\U0001F4F4" }} Заглушить:/avtoDv2'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/avto'
+  mode: single
+- id: '1643571465849'
+  alias: Telegram - двигатель/завести
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoDv1
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Двигатель/Завести
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Точно хотите завести двигатель?'
+      message: '----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  Да:/avtoDv1_1'
+      - '{{ "\U0001F4F4" }} Нет:/avto'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/avto'
+  mode: single
+- id: '1643571594302'
+  alias: Telegram - двигатель/заглушить
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoDv2
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Двигатель/Заглушить
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Точно хотите заглушить двигатель?'
+      message: '----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  Да:/avtoDv2_1'
+      - '{{ "\U0001F4F4" }} Нет:/avto'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/avto'
+  mode: single
+- id: '1643571855124'
+  alias: Telegram - Охрана/снять
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoOx2
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Охрана/Снять
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Точно хотите снять с охраны?'
+      message: '----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  Да:/avtoOx1_2'
+      - '{{ "\U0001F4F4" }} Нет:/avto'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/avto'
+  mode: single
+- id: '1643572062388'
+  alias: Telegram - Охрана/поставить
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoOx1
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Вход в меню Охрана/поставить
+
+        ------------------------------------
+
+        '
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.chat_id }}'
+      title: ' {{"\U0001F914"}} Точно хотите поставить на охрану?'
+      message: '----------------------
+
+        '
+      inline_keyboard:
+      - '{{ "\U0001F4A1" }}  Да:/avtoOx1_1'
+      - '{{ "\U0001F4F4" }} Нет:/avto'
+      - '{{ "\u21a9\ufe0f" }} Назад к панели управления:/avto'
+  mode: single
+- id: '1643572352319'
+  alias: снять с охраны да
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoOx1_2
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Отправлен запрос на снятие с охраны. Если ответ не поступит - машина
+        останеться под охраной. Ожидайте...
+  - device_id: d10b7f081729074ade3a1d150681ad51
+    domain: lock
+    entity_id: lock.signalizatsiia_starline_security
+    type: unlock
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - service: notify.alexey
+    data_template:
+      message: '{{ ''Охрана снята'' if is_state(''lock.signalizatsiia_starline_security'',
+        ''unlocked'') else ''Прошло полминуты, но охрана все еще включена. Проверьте
+        машину'' }}'
+  mode: single
+- id: '1643573180849'
+  alias: охрана снята
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: lock.signalizatsiia_starline_security
+    to: unlocked
+    from: locked
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: notify.alexey
+    data:
+      message: Охрана машины отключена. Если это сделали не вы - срочно проверьте
+        машину
+  mode: single
+- id: '1643573682485'
+  alias: поставить охраны да
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoOx1_1
+  condition:
+  - condition: device
+    device_id: d10b7f081729074ade3a1d150681ad51
+    domain: lock
+    entity_id: lock.signalizatsiia_starline_security
+    type: is_unlocked
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Отправлен запрос на постановку охраны. Если ответ не поступит - машина
+        останеться без охраны. Ожидайте...
+  - device_id: d10b7f081729074ade3a1d150681ad51
+    domain: lock
+    entity_id: lock.signalizatsiia_starline_security
+    type: lock
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - service: notify.alexey
+    data_template:
+      message: '{{ ''Машина под охраной'' if is_state(''lock.signalizatsiia_starline_security'',
+        ''locked'') else ''Прошло полминуты, но охрана не включена. Проверьте машину''
+        }}'
+  mode: single
+- id: '1643573783263'
+  alias: охрана поставлена
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: lock.signalizatsiia_starline_security
+    to: locked
+    from: unlocked
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: notify.alexey
+    data:
+      message: Машина взята под охрану.
+  mode: single
+- id: '1643574049347'
+  alias: поставить охраны да/ уже стоит
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoOx1_1
+  condition:
+  - condition: device
+    device_id: d10b7f081729074ade3a1d150681ad51
+    domain: lock
+    entity_id: lock.signalizatsiia_starline_security
+    type: is_locked
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Машина уже под охраной, повторная постановка не требуется
+  mode: single
+- id: '1644065480887'
+  alias: снять охраны да/ уже снята
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoOx1_2
+  condition:
+  - condition: device
+    device_id: d10b7f081729074ade3a1d150681ad51
+    domain: lock
+    entity_id: lock.signalizatsiia_starline_security
+    type: is_unlocked
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Машина уже снята с охраны, повторное снятие не требуется
+  mode: single
+- id: '1644066273567'
+  alias: завести двигатель да
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoDv1_1
+  condition:
+  - condition: device
+    type: is_off
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: switch.signalizatsiia_starline_engine
+    domain: switch
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Отправлен запрос на запуск двигателя. Если ответ не поступит - машина
+        не заведется. Ожидайте...
+  - type: turn_on
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: switch.signalizatsiia_starline_engine
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - service: notify.group_bot
+    data_template:
+      message: '{{ ''Машина заведена на 15 минут'' if is_state(''switch.signalizatsiia_starline_engine'',
+        ''on'') else ''Прошло полминуты, но машина не заведена. Проверьте машину''
+        }}'
+  mode: single
+- id: '1644066756697'
+  alias: заглушить двигатель да
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoDv2_1
+  condition:
+  - condition: device
+    type: is_on
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: switch.signalizatsiia_starline_engine
+    domain: switch
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Отправлен запрос на глушение двигателя. Если ответ не поступит - машина
+        продолжит работать до истечений срока автозапуска. Ожидайте...
+  - type: turn_off
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: switch.signalizatsiia_starline_engine
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - service: notify.group_bot
+    data_template:
+      message: '{{ ''Машина заглушена'' if is_state(''switch.signalizatsiia_starline_engine'',
+        ''off'') else ''Прошло полминуты, но машина не заглушилась. Проверьте машину''
+        }}'
+  mode: single
+- id: '1644066883836'
+  alias: завести двигатель да (уже)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoDv1_1
+  condition:
+  - condition: device
+    type: is_on
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: switch.signalizatsiia_starline_engine
+    domain: switch
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Двигатель уже заведен. Повторный запуск не требуется
+  mode: single
+- id: '1644066983251'
+  alias: заглушить двигатель да (ужн)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /avtoDv2_1
+  condition:
+  - condition: device
+    type: is_off
+    device_id: d10b7f081729074ade3a1d150681ad51
+    entity_id: switch.signalizatsiia_starline_engine
+    domain: switch
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Двигатель не запущен, глушение не требуется
+  mode: single
+- id: '1644860495500'
+  alias: выкл wled по вкл света в зале
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: c5861245f86ee3d5474fa63c37add5cb
+    entity_id: switch.0x158d0004330af1_channel_2
+    domain: switch
+  condition:
+  - condition: device
+    type: is_on
+    device_id: 3b6de9e7d239524a4696ef3c55ef197e
+    entity_id: light.wled
+    domain: light
+  action:
+  - type: turn_off
+    device_id: 3b6de9e7d239524a4696ef3c55ef197e
+    entity_id: light.wled
+    domain: light
+  mode: single
+- id: '1644913104762'
+  alias: Баланс СИМ карты
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.signalizatsiia_starline_balance
+    below: '20'
+  condition: []
+  action:
+  - service: notify.alexey
+    data:
+      message: 'Баланс СИМ-карты меньше 20 рублей. Не забудьте пополнить. '
+  mode: single
+- id: '1645357168473'
+  alias: Замки весты
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: lock.signalizatsiia_starline_security
+    to: locked
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.lock_starline
+  mode: single
+- id: '1645357558719'
+  alias: Замки весты2
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: lock.signalizatsiia_starline_security
+    to: unlocked
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.lock_starline
+  mode: single
+- &id001
+  id: '1645357872881'
+  alias: Локация веста
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: device_tracker.signalizatsiia_starline_location
+    to: Близко к дому
+    from: not_home
+  - platform: state
+    entity_id: device_tracker.signalizatsiia_starline_location
+    to: home
+    from: not_home
+  - platform: state
+    entity_id: device_tracker.signalizatsiia_starline_location
+    from: not_home
+    to: Работа
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.location_vesta
+  mode: single
+- *id001
+- id: '1645358093524'
+  alias: Локация веста 2
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: device_tracker.signalizatsiia_starline_location
+    from: Близко к дому
+    to: not_home
+  - platform: state
+    entity_id: device_tracker.signalizatsiia_starline_location
+    from: home
+    to: not_home
+  - platform: state
+    entity_id: device_tracker.signalizatsiia_starline_location
+    to: not_home
+    from: Работа
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.location_vesta
+  mode: single
+- id: '1645363066503'
+  alias: топливо веста
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.signalizatsiia_starline_fuel_volume
+    below: '15'
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.volume_vesta
+  mode: single
+- id: '1645363066503'
+  alias: топливо вестa2
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.signalizatsiia_starline_fuel_volume
+    above: '15'
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.volume_vesta
+  mode: single
+- id: '1645363286130'
+  alias: топливо веста 2
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.signalizatsiia_starline_fuel_volume
+    above: '15'
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.volume_vesta
+  mode: single
+- id: '1645637389310'
+  alias: выкл кухня из коридора
+  description: ''
+  trigger:
+  - platform: state
+    to: button_1_single
+    entity_id: sensor.0x158d0004a005e6_action
+  condition:
+  - condition: device
+    type: is_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  action:
+  - type: turn_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1645637457009'
+  alias: Выключить свет кухни из коридора
+  description: По нажатию левой кнопки в зале свет на кухне выключается если был включен
+  trigger:
+  - platform: device
+    device_id: 2ac43f35ab953d988cfaa86cc44a8255
+    domain: xiaomi_gateway3
+    type: button_1
+    action: single
+  condition:
+  - condition: device
+    type: is_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  action:
+  - type: turn_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1645637575677'
+  alias: вкл свет кухни из коридора
+  description: ''
+  trigger:
+  - platform: state
+    to: button_1_single
+    entity_id: sensor.0x158d0004a005e6_action
+  condition:
+  - condition: device
+    type: is_off
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: d31e6b380d92db814e44d0ba0cbaee8b
+    entity_id: switch.0x158d00053ee70c_switch
+    domain: switch
+  mode: single
+- id: '1645991081619'
+  alias: сброс раз в сутки
+  description: ''
+  trigger:
+  - platform: time
+    at: 06:00
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.dlia_privetstvennoi_stseny
+  mode: single
+- id: '1647713031615'
+  alias: Увлажнитель вкл если меньше 40
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.a4c138898f05_humidity
+    below: '40'
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 2db191ba61e31bf2515a00ebc40f49f2
+    entity_id: humidifier.jsq5_cloud_820876
+    domain: humidifier
+  mode: single
+- id: '1647713093860'
+  alias: Увлажнитель выкл если больше 44
+  description: ''
+  trigger:
+  - platform: numeric_state
+    above: '44'
+    entity_id: sensor.a4c138898f05_humidity
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 2db191ba61e31bf2515a00ebc40f49f2
+    entity_id: humidifier.jsq5_cloud_820876
+    domain: humidifier
+  mode: single
+- id: '1648054781645'
+  alias: Если звонит домофон - алиса скажет
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.domofon_incoming_call
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: switch.domofon_mute_sound
+      state: 'off'
+    - condition: state
+      entity_id: switch.domofon_mute_sound_once
+      state: 'off'
+  action:
+  - service: script.1648054945190
+    data: {}
+  mode: single
+- id: '1656355859537'
+  alias: Уведомление о завершении иойки посудомойки
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.bosch_2br_operation_state
+    to: Finished
+    from: Run
+  condition:
+  - condition: state
+    entity_id: sensor.bosch_2br_program_progress
+    state: '100'
+  action:
+  - service: notify.alexey
+    data:
+      message: "\U0001F4AC✅Посудомойка закончила программу, можете доставать посуду"
+  mode: single
+- id: '1659125417463'
+  alias: Включение телевизора
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.ue40j5530
+    to: Rrr
+    from: Ее
+  condition:
+  - condition: state
+    entity_id: media_player.ue40j5530
+    state: 'off'
+  action:
+  - service: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.vkliuchenie_ty
+  mode: single
+- id: '1659125476652'
+  alias: Выключение телевизора
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.ue40j5530
+    to: Rrr
+    from: Ее
+  condition:
+  - condition: state
+    entity_id: media_player.ue40j5530
+    state: 'on'
+  action:
+  - service: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.vkliuchenie_ty
+  mode: single
+- id: '1659452954861'
+  alias: Закрой шторы в 17-00
+  description: ''
+  trigger:
+  - platform: time
+    at: '17:00:00'
+  condition:
+  - condition: state
+    entity_id: cover.lazyroll_4dc741
+    state: open
+  - condition: state
+    entity_id: binary_sensor.0x158d00068aca37_contact
+    state: 'off'
+  action:
+  - service: cover.close_cover
+    data: {}
+    target:
+      entity_id: cover.lazyroll_4dc741
+  mode: single
+- id: '1661453319768'
+  alias: Domofon incoming call notificationq (в общий чат)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.domofon_incoming_call
+    to: 'on'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: switch.domofon_automatically_open
+          state: 'on'
+        - condition: state
+          entity_id: switch.domofon_automatically_open_once
+          state: 'on'
+      sequence:
+      - service: notify.group_bot
+        data:
+          message: Звонок в домофон принят автоматически
+    - conditions:
+      - condition: state
+        entity_id: switch.domofon_automatically_reject
+        state: 'on'
+      sequence:
+      - service: notify.group_bot
+        data:
+          message: Звонок в домофон отклонëн автоматически
+    default:
+    - service: notify.group_bot
+      data:
+        message: '@alex_zob и @mary_zob. Кто-то набирает в домофон. Что делать?'
+        data:
+          inline_keyboard:
+          - '{{ ''✅ Открыть:/domofon_open, ❌ Отклонить:/domofon_reject'' }}'
+  mode: single
+  initial_state: true
+- id: '1661461495017'
+  alias: Алиса звали в чате телеграмма
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_text
+    event_data: {}
+  condition:
+  - condition: template
+    value_template: "{{\"Алису\" in trigger.event.data.text or \n\"алису\" in trigger.event.data.text
+      or \n\"Алисы\" in trigger.event.data.text or \n\"алисы\" in trigger.event.data.text}}\n"
+  action:
+  - service: notify.group_bot
+    data:
+      message: Звали меня?
+  - service: timer.start
+    data: {}
+    target:
+      entity_id: timer.alisa_v_telege
+  mode: parallel
+  max: 10
+- id: '1661523300734'
+  alias: Тест триггере евент
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_text
+  - platform: event
+    event_type: telegram_command
+  condition: []
+  action:
+  - service: notify.group_bot
+    data:
+      message: '{{trigger.event.data.text|length}} {{trigger.event.data.text}} {{trigger.event.data.from_first}}
+        {{trigger.event.data.from_last}} {{trigger.event.data.user_id}} {{trigger.event.data.chat_id}}
+        {{trigger.event.data.chat}} {{trigger.event.data.command}} {{trigger.event.data.args}}'
+  mode: single
+- id: '1661579894753'
+  alias: Алиса вопрос в телегее (тестовая)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_text
+    event_data: {}
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: timer.alisa_v_telege
+      state: active
+    - condition: template
+      value_template: "{{\"Алиса\" in trigger.event.data.text or \n\"алиса\" in trigger.event.data.text}}\n"
+  action:
+  - service: media_player.volume_mute
+    data:
+      is_volume_muted: true
+    target:
+      entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  - service: media_player.play_media
+    entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+    data_template:
+      media_content_id: '{{ trigger.event.data.text }}'
+      media_content_type: question:{{ trigger.event.data.chat_id }}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: media_player.volume_mute
+    data:
+      is_volume_muted: false
+    target:
+      entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  mode: parallel
+  max: 10
+- id: '1661581214164'
+  alias: Алиса ответ в телегуу (тестовая)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: yandex_station_response
+  condition: []
+  action:
+  - service: media_player.volume_mute
+    data:
+      is_volume_muted: true
+    target:
+      entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  - service: telegram_bot.send_message
+    data_template:
+      target: '{{ trigger.event.data.request_id }}'
+      message: '{{ trigger.event.data.text }}'
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 40
+      milliseconds: 0
+  - service: media_player.volume_mute
+    data:
+      is_volume_muted: false
+    target:
+      entity_id: media_player.yandex_station_ff98f0293d539c959187ecd2
+  mode: parallel
+  max: 10
+- id: '1665138774104'
+  alias: 1тест света по самодельному движению
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.sensor_dv
+    to: 'on'
+    from: 'off'
+  condition: []
+  action:
+  - service: light.turn_on
+    data: {}
+    target:
+      entity_id: light.svet_na_kukhne
+  mode: single
+- id: '1665138811937'
+  alias: 1тест света по самодельному движению (Дублировать)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.sensor_dv
+    to: 'off'
+    from: 'on'
+  condition: []
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id: light.svet_na_kukhne
+  mode: single
+- id: '1666027139980'
+  alias: Открыть шторы по остановке будильника
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.budilnik_iz_ios
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: cover.lazyroll_4dc741
+    state: closed
+  action:
+  - service: cover.open_cover
+    data: {}
+    target:
+      entity_id: cover.lazyroll_4dc741
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.budilnik_iz_ios
+  mode: single
+- id: '1666028306421'
+  alias: Открыть шторы по датчику движения
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.0x158d000423b34f_motion
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    state: closed
+    entity_id: cover.lazyroll_4dc741
+  - condition: time
+    after: 07:00:00
+    before: 09:00:00
+    weekday: []
+  action:
+  - service: cover.open_cover
+    data: {}
+    target:
+      entity_id: cover.lazyroll_4dc741
+  mode: single
+- id: '1666033769012'
+  alias: 'Открыть шторы по остановке будильника  '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.budilnik_iz_ios
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: cover.lazyroll_4dc741
+    state: closed
+  - condition: numeric_state
+    entity_id: sensor.kolo_home_person
+    above: '0'
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.budilnik_iz_ios
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - binary_sensor.0x158d000423b34f_motion
+      from: 'off'
+      to: 'on'
+    timeout: '1200'
+    continue_on_timeout: false
+  - service: cover.set_cover_position
+    data:
+      position: 40
+    target:
+      entity_id: cover.lazyroll_4dc741
+  mode: parallel
+- id: '1666343048015'
+  alias: Уведомление в телеграм пробег авто
+  description: ''
+  trigger:
+  - platform: template
+    value_template: '{% set t1 = states(''sensor.signalizatsiia_starline_mileage'')
+      | int %}
+
+      {% set t2 = states(''input_number.probeg_pri_zamene_masla'') | int +(10000)
+      %}
+
+      {{t1 >=  t2}}'
+  - platform: time
+    at: '12:00:00'
+  condition:
+  - condition: template
+    value_template: '{% set t1 = states(''sensor.signalizatsiia_starline_mileage'')
+      | int %}
+
+      {% set t2 = states(''input_number.probeg_pri_zamene_masla'') | int +(10000)%}
+
+      {{t1 >=  t2}}'
+  action:
+  - service: notify.group_bot
+    data:
+      message: Пора менять масло в машине. Последняя замена масла была {{states('sensor.signalizatsiia_starline_mileage')|int
+        - states('input_number.probeg_pri_zamene_masla') | int}} км назад.
+  mode: single
+- id: '1666346084896'
+  alias: Запись пробега при замене масла
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /maslo_ok
+  condition: []
+  action:
+  - service: input_number.set_value
+    data:
+      value: '{{( states(''sensor.signalizatsiia_starline_mileage'')|int )}}'
+    target:
+      entity_id: input_number.probeg_pri_zamene_masla
+  - service: telegram_bot.edit_message
+    data_template:
+      message_id: last
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message: 'Пробег зафиксирован. Напомню через 10 000 км о необходимости заменить
+        масло
+
+        '
+  mode: single

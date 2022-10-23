@@ -1,0 +1,109 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+# выносы в отдельный файл
+group: !include groups.yaml
+automation: !include automations.yaml #файл с автоматизациями
+scene: !include scenes.yaml # файл с сценами
+script: !include scripts.yaml #файл со скриптами
+homekit: !include homekit.yaml #файл с отдачей устройств в HK
+yandex_smart_home: !include yandex_smart_home.yaml #отдаем устройства в яндекс дом УДЯ
+lovelace: !include lovelace.yaml # настройки панелей интерфейса
+yandex_station: !include yandex_station.yaml #забираем устройства из УДЯ
+sensor: !include sensor.yaml #файл с сенсорами
+light: !include light.yaml #файл с лампочками
+#настройки
+api:
+home_connect_alt:
+  client_id: !secret hk_client_id
+  client_secret: !secret hk_client_secret
+  language: ru
+frontend:
+  themes: !include_dir_merge_named themes
+#browser_mod:
+homeassistant:
+  customize: !include customize.yaml
+  allowlist_external_dirs: #папка для сохранения фото с камеры
+    - /config/FOTO
+# Example configuration.yaml entry
+conversation: #интенты для Алисы
+  intents:
+    # менять нужно entity_id до двоеточия, после двоеточия ничего менять не надо!
+    media_player.yandex_station_04207894c12008280310: [.+]
+telegram_bot: #тклеграмм
+  - platform: polling
+    api_key: !secret api_bot_key_telegram 
+    parse_mode: html
+    allowed_chat_ids: # пользователи тедеги
+      - !secret id_user_tg_1
+      - !secret id_user_tg_2
+      - !secret id_group_bot
+      - !secret id_group_anon
+notify: #служба уведомлений
+  - name: Alexey
+    platform: telegram
+    chat_id: !secret id_user_tg_1
+  - name: Mary
+    platform: telegram
+    chat_id: !secret id_user_tg_2
+  - name: Group_bot
+    platform: telegram
+    chat_id: !secret id_group_bot
+  - name: Group_anon
+    platform: telegram
+    chat_id: !secret id_group_anon
+recorder: #БД 
+  db_url: !secret db_url_mary
+  commit_interval: 60
+  exclude: #исключаем из БД и не пишем истор
+    entities: #кокретные объекты из истории и базы
+      - camera.my_camera
+      - sensor.v_storonu_tsentra
+      - sensor.v_storonu_bragino
+      - sensor.date
+      - sun.sun
+      - sensor.time
+      - sensor.time_date
+      - sensor.domofon_uptime
+      - sensor.tec_temp_ter
+      - sensor.volume_ys
+      - sensor.volume_ysm
+      - media_player.yandex_station_ff98f0293d539c959187ecd2
+      - media_player.yandex_station_04207894c12008280310
+      - sensor.0x158d0004330af1_action
+      - binary_sensor.rpi_power_status
+      - sensor.cpu_get_throttled
+      - sensor.v_centr
+      - sensor.v_bragino
+      - binary_sensor.0x158d000423b34f_motion
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   

@@ -1,0 +1,105 @@
+#sensor: создание собственных сенсоров
+#   - platform: alpha_vantage
+#     api_key: !secret api_key_alfa
+#     symbols:
+#       - name: Google
+#         currency: Руб
+#         symbol: GOOGL
+#     foreign_exchange:
+#       - from: USD
+#         to: RUB
+#         name: Доллар
+  - platform: time_date # дата и вреям
+    display_options:
+      - 'time'
+      - 'date'
+      - 'time_date'
+  - platform: sql
+    db_url: !secret db_url_mary
+    queries:
+      - name: Maria DB size
+        query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1048576, 2) "value" FROM information_schema.tables WHERE table_schema="homeassistant" GROUP BY table_schema;'
+        column: 'value'
+        unit_of_measurement: MB
+        #unique_id: sensor.maria_db_size
+  - platform: systemmonitor # память и процессор малины
+    resources:
+    - type: processor_use
+    - type: disk_use_percent
+      arg: /
+    - type: memory_use_percent
+    - type: last_boot
+    - type: disk_free
+      arg: /
+#   - platform: command_line #тротлинг
+#     name: CPU get_throttled
+    # command: "cat /sys/devices/platform/soc/soc:firmware/get_throttled"
+  - platform: command_line #температура процессора
+    name: CPU Temperature
+    command: "cat /sys/class/thermal/thermal_zone0/temp"
+    unit_of_measurement: "°C"
+    value_template: '{{ value | multiply(0.001) | round(1) }}'
+  - platform: template
+    sensors:
+    #   lock_vesta: 
+    #     unique_id: sensor.lock_vesta
+    #     value_template: "{% if states('sensor.temp_cor')|int < 20 %} Холодно {% elif states('sensor.temp_cor')|int <23 %} Прохладно {% elif states('sensor.temp_cor')|int <25 %} Комфортно {% elif states('sensor.temp_cor')|int >= 25 %} Жарко {% endif%}"
+    #   sost_temp_cux:
+    #     value_template: "{% if states('sensor.0x158d00040cb32a_temperature')|int < 20 %} Холодно {% elif states('sensor.0x158d00040cb32a_temperature')|int <23 %} Прохладно {% elif states('sensor.0x158d00040cb32a_temperature')|int <25 %} Комфортно {% elif states('sensor.0x158d00040cb32a_temperature')|int >= 25 %} Жарко {% endif%}"
+    #   sost_temp_zal:
+    #     value_template: "{% if states('sensor.tec_temp_zal')|int < 20 %} Холодно {% elif states('sensor.tec_temp_zal')|int <23 %} Прохладно {% elif states('sensor.tec_temp_zal')|int <25 %} Комфортно {% elif states('sensor.tec_temp_zal')|int >= 25 %} Жарко {% endif%}"
+    #   sost_temp_cor:
+    #     value_template: "{% if states('sensor.temp_cor')|int < 20 %} Холодно {% elif states('sensor.temp_cor')|int <23 %} Прохладно {% elif states('sensor.temp_cor')|int <25 %} Комфортно {% elif states('sensor.temp_cor')|int >= 25 %} Жарко {% endif%}"
+      temp_cor:
+        value_template: "{{((states('sensor.0x158d00040cb32a_temperature')|int) + (states('sensor.a4c138898f05_temperature')|int))/2}}"
+        unit_of_measurement: "°C"
+        unique_id: sensor.temp_cor
+      tec_hum_cor:
+        value_template: "{{((states('sensor.0x158d00040cb32a_humidity')|int)+(states('sensor.a4c138898f05_humidity')|int))/2}}"
+        unit_of_measurement: "%"
+        unique_id: sensor.tec_hum_cor
+      tec_temp_zal:
+        value_template: "{{ states('sensor.a4c138898f05_temperature') }}"
+        unique_id: sensor.tec_temp_zal
+        unit_of_measurement: "°C"
+    #   okr_dollar: 
+    #     value_template: "{{ states('sensor.dollar')|round(1, 'common') }}"
+    #     unit_of_measurement: "RUB"
+      sredn_temp_kv:
+        value_template: "{{ (states('sensor.temp_cor')| int + states('sensor.0x158d00040cb32a_temperature')|int + states('sensor.tec_temp_zal')|int)/3}}"
+        unit_of_measurement: "°C"
+      st_cube:
+        value_template: "{% if states('counter.chislo_podbrasyvanii_kuba_akara')|int == 0 %} Громкость не регулируется {% endif%} {% if states('counter.chislo_podbrasyvanii_kuba_akara')|int == 1 %} Телевизор {% endif%} {% if states('counter.chislo_podbrasyvanii_kuba_akara')|int == 2 %} Станция {% endif%} {% if states('counter.chislo_podbrasyvanii_kuba_akara')|int == 3 %} Мини станция {% endif%} {% if states('counter.chislo_podbrasyvanii_kuba_akara')|int == 4 %} Термостат {% endif%}"
+      tec_temp_ter: #текущая температура термостат
+        unit_of_measurement: "°C"
+        unique_id: sensor.tec_temperature
+        value_template: "{{ state_attr('climate.cubee_th123w_7869_thermostat', 'temperature') }}"
+      volume_ysm: #текушая громкость ЯСМини
+        value_template: "{{ state_attr('media_player.yandex_station_ff98f0293d539c959187ecd2', 'volume_level') }}"
+      volume_ys: #текущая громкость ЯС
+        value_template: "{{ state_attr('media_player.yandex_station_04207894c12008280310', 'volume_level') }}"
+      ned_obj:
+        value_template: "{{ states | selectattr('state', 'in', ['unavailable']) | list | count }}"
+      kolvo_avto:
+        value_template: "{{ states.automation | list | count }}"
+      kolvo_lamp:
+        value_template: "{{ states.light| list | count }}"
+      kolvo_switch:
+        value_template: "{{ states.switch| list | count }}"
+      kolvo_person:
+        value_template: "{{ states.person| list | count }}"
+      kolvo_sensor:
+        value_template: "{{ states.sensor| list | count }}"
+      kolo_home_person:
+        value_template: "{{ states.person | selectattr('state', 'in', ['home']) | list | count }}"
+      v_bragino:
+        value_template: "{{(states('sensor.v_storonu_bragino')| as_datetime - now()).total_seconds()  | timestamp_custom('%-H hr %-M min' if  (states('sensor.v_storonu_bragino') | as_datetime - now()).total_seconds()  > 3600 else '%-M мин', false) }}"
+      v_centr:
+        value_template: "{{(states('sensor.v_storonu_tsentra')| as_datetime - now()).total_seconds()  | timestamp_custom('%-H hr %-M min' if  (states('sensor.v_storonu_tsentra') | as_datetime - now()).total_seconds()  > 3600 else '%-M мин', false) }}"
+  - platform: yandex_transport
+    name: В сторону брагино
+    stop_id: !secret ost_brag
+  - platform: yandex_transport
+    name: В сторону центра
+    stop_id: !secret ost_centr
+    

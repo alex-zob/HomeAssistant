@@ -1,0 +1,102 @@
+---
+custom_card_eng:
+  template:
+    - "ulm_custom_card_eng_language_variables"
+    - "icon_info_bg"
+    - "ulm_language_variables"
+  tap_action:
+    action: |
+      [[[
+        if(variables.ulm_custom_card_eng_tap_control == true){
+          return "call-service";
+        } else {
+          return "more-info";
+        }
+      ]]]
+    # only related with call-service action
+    service: |
+      [[[
+        if(variables.ulm_custom_card_eng_tap_control == true){
+          if (entity.state == "on"){
+            return "switch.turn_on"
+          } else if (entity.state == "off"){
+            return "switch.turn_off"
+          }
+        } else {
+          return;
+        }
+      ]]]
+    # only related with call-service action
+    service_data:
+      entity_id: |
+        [[[ return entity.entity_id ]]]
+  show_label: true
+  show_name: true
+  triggers_update:
+    - "[[[ return entity.entity_id ]]]"
+  label: |
+    [[[
+      if (entity.state != "unavailable"){
+        if (entity.state == "on"){
+          return variables.custom_card_eng;
+        } else if (entity.state == "off"){
+          return variables.custom_card_eng;
+        } else if (entity.state == "off"){
+          return variables.custom_card_eng;
+        } else if (entity.state == "locking"){
+          return variables.custom_card_eng;
+        }  else {
+          return entity.state;
+        }
+      } else {
+        return custom_card_eraycetinay_lock_unavailable;
+      }
+    ]]]
+  state:
+    - operator: "template"
+      value: |
+        [[[
+          return entity.state == "off";
+        ]]]
+      styles:
+        icon:
+          - color: "[[[ return `rgba(var(--color-blue), 1)`; ]]]"
+        img_cell:
+          - background-color: "[[[ return `rgba(var(--color-yellow), 0.2)`; ]]]"
+    - operator: "template"
+      value: |
+        [[[
+          return entity.state == "on";
+        ]]]
+      styles:
+        icon:
+          - color: "[[[ return `rgba(var(--color-yellow), 1)`; ]]]"
+        img_cell:
+          - background-color: "[[[ return `rgba(var(--color-green), 0.2)`; ]]]"
+  styles:
+    icon:
+      - color: "rgba(var(--color-theme),0.2)"
+    img_cell:
+      - background-color: "rgba(var(--color-theme),0.05)"
+      - border-radius: "50%"
+      - place-self: "center"
+      - width: "42px"
+      - height: "42px"
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      

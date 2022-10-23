@@ -1,0 +1,6 @@
+---
+custom_card_httpedo13_humidifier_language_variables:
+  variables:
+    custom_card_httpedo13_humidifier_off: "Action"
+    custom_card_httpedo13_humidifier_on: "Action"
+    custom_card_httpedo13_humidifier_heating: "Action"

@@ -1,0 +1,39 @@
+#lovelace: настройка панелей интерфейса
+  mode: storage
+#   dashboards:
+#     lovelace-zal:
+#       mode: yaml
+#       title: zal
+#       icon: mdi:car
+#       show_in_sidebar: false
+#       filename: ui_lovelace_minimalist/dashboard/zal-lovelace.yaml
+#     lovelace-cux:
+#       mode: yaml
+#       title: cux
+#       icon: mdi:car
+#       show_in_sidebar: false
+#       filename: ui_lovelace_minimalist/dashboard/cux-lovelace.yaml
+#     lovelace-cor:
+#       mode: yaml
+#       title: cor
+#       icon: mdi:car
+#       show_in_sidebar: false
+#       filename: ui_lovelace_minimalist/dashboard/cor-lovelace.yaml
+#     lovelace-vesta:
+#       mode: yaml
+#       title: vesta
+#       icon: mdi:car
+#       show_in_sidebar: false
+#       filename: ui_lovelace_minimalist/dashboard/vesta-lovelace.yaml
+    # lovelace-config:
+    #   mode: yaml
+    #   title: config
+    #   icon: mdi:car
+    #   show_in_sidebar: false
+    #   filename: ui_lovelace_minimalist/dashboard/config-lovelace.yaml
+#     # lovelace-mursh:
+    #   mode: storage
+    #   title: Mursh
+    #   icon: mdi:car
+    #   show_in_sidebar: false
+    #   filename: ui_lovelace_minimalist/dashboard/mursh-lovelace.yaml

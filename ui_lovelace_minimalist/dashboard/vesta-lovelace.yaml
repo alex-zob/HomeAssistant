@@ -1,0 +1,127 @@
+---
+button_card_templates: !include_dir_merge_named "../../custom_components/ui_lovelace_minimalist/__ui_minimalist__/ulm_templates/"
+
+title: "Машина"
+theme: "minimalist-desktop"
+background: "var(--background-image)"
+# views: !include_dir_merge_list "views/"
+views:
+  - title: "Example View"
+    path: 0
+    icon: "mdi:flower"
+    cards:
+    - type: 'custom:button-card'
+      template: chip_back
+      variables:
+        ulm_chip_back_path: /ui-lovelace-minimalist/0
+    # - type: 'custom:button-card'
+    #   template: card_graph
+    #   entity: ensor.signalizatsiia_starline_interior_temperature
+    #   variables:
+    #     ulm_card_graph_color: "var(--google-blue)"
+    #     ulm_card_graph_name: График изменения температуры в салоне за сутки
+    #   #  ulm_card_graph_entity: sensor.signalizatsiia_starline_interior_temperature
+    #     ulm_card_graph_type: fill
+    #     ulm_card_graph_hours: 24
+    - type: 'custom:button-card'
+      template: card_graph
+      entity: sensor.signalizatsiia_starline_interior_temperature
+      variables:
+        ulm_card_graph_color: "var(--google-blue)"
+        ulm_card_graph_name: График изменения температуры в салоне за сутки
+        ulm_card_graph_entity: sensor.signalizatsiia_starline_interior_temperature
+        ulm_card_graph_type: fill
+        ulm_card_graph_hours: 24
+   
+        
+        
+        
+        
+        
+        
+    - type: horizontal-stack
+      cards:
+      - type: 'custom:button-card'
+        template: card_generic
+        entity: sensor.signalizatsiia_starline_mileage
+      - type: 'custom:button-card'
+        template: card_generic
+        entity: sensor.signalizatsiia_starline_fuel_volume
+    - type: horizontal-stack
+      cards:
+      - type: 'custom:button-card'
+        template: card_generic
+        entity: sensor.signalizatsiia_starline_balance
+      - type: 'custom:button-card'
+        template: card_generic
+        entity: sensor.signalizatsiia_starline_obd_errors
+      - type: 'custom:button-card'
+        template: card_generic
+        entity: sensor.signalizatsiia_starline_battery
+    - type: 'custom:button-card'
+      template: card_title
+    # - type: horizontal-stack
+    #   cards:
+    - type: "custom:button-card"
+      entity: lock.signalizatsiia_starline_security
+      template: "custom_card_eraycetinay_lock"
+      name: "Охрана"
+      variables:
+        ulm_custom_card_eraycetinay_lock_tap_control: true
+    # - type: "custom:button-card"
+    #   entity: switch.signalizatsiia_starline_engine
+    #   template: "custom_card_eng"
+    #   name: "Охрана"
+    #   variables:
+    #     ulm_custom_card_eng_tap_control: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

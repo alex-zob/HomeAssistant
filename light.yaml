@@ -1,0 +1,13 @@
+#light: создаем свои лампочки из выключателей
+  - platform: switch
+    name: Свет на кухне
+    entity_id: switch.0x158d00053ee70c_switch
+  - platform: switch
+    name: Свет в зале
+    entity_id: switch.0x158d0004330af1_channel_2
+  - platform: switch
+    name: Свет в коридоре
+    entity_id: switch.0x158d0004a005e6_channel_2
+  - platform: switch
+    name: Ночник
+    entity_id: switch.rozetka

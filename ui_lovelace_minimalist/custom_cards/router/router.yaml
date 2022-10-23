@@ -1,0 +1,170 @@
+type: custom:button-card
+entity: binary_sensor.giga_kn_1011_online
+name: Keenetic Giga
+triggers_update: all
+show_last_changed: false
+show_name: true
+show_entity_picture: true
+size: 80%
+entity_picture: /local/myicons/miwifi_on.png
+aspect_ratio: 2.7/1
+tap_action:
+  action: call-service
+  service: script.none_actions
+styles:
+  img_cell:
+    - width: 70px
+    - height: 70px
+    - border-radius: 100%
+    - place-self: center
+    - background-color: rgb(0, 0, 0, 0.3)
+  name:
+    - justify-self: start
+    - font-size: 22px
+    - font-weight: 400
+    - padding-left: 10px
+  card:
+    - padding: 2%
+  grid:
+    - grid-template-areas: >-
+        "i i n n n n n n n"    "i i status1 status1 status1 status1 status1
+        status1 status1" "i i status2 status2 status2 status2 status2 status2
+        status2" "i i status3 status3 status3 status3 status3 status3 status3" 
+        "s s s s s s s s s" "button1 button1 button1 button2 button2 button2
+        button3 button3 button3"
+    - grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr
+    - grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr
+  custom_fields:
+    status1:
+      - justify-self: start
+      - font-size: 14px
+      - font-weight: 500
+      - color: '#aaaaaa'
+      - padding-top: 10px
+      - padding-left: 10px
+    status2:
+      - justify-self: start
+      - font-size: 14px
+      - font-weight: 500
+      - color: '#aaaaaa'
+      - padding-top: 10px
+      - padding-left: 10px
+    status3:
+      - justify-self: start
+      - font-size: 14px
+      - font-weight: 500
+      - color: '#aaaaaa'
+      - padding-top: 10px
+      - padding-left: 10px
+    button1:
+      - padding-left: 2px
+      - padding-right: 2px
+    button2:
+      - padding-left: 2px
+      - padding-right: 2px
+    button3:
+      - padding-left: 2px
+      - padding-right: 2px
+custom_fields:
+  status1: |
+    [[[
+      var down = states['sensor.keenetic_gateway_kib_s_received'].state + 'kb/s ';
+      var up = states['sensor.keenetic_gateway_kib_s_sent'].state + 'kb/s';
+      return`
+       <ha-icon icon="mdi:download" style="--mdc-icon-size: 13px;" ></ha-icon>` + ' ' + down + 
+      `<ha-icon icon="mdi:upload" style="--mdc-icon-size: 13px;" ></ha-icon>` + up;
+    ]]]
+  status2: |
+    [[[
+      var upt = states['sensor.keenetic_state_rci'].state;
+      return `
+      <ha-icon icon="mdi:timer-sand" style="--mdc-icon-size: 13px;" ></ha-icon>` + ' ' + upt;
+    ]]]
+  status3: |
+    [[[
+      var used = states['sensor.keenetic_disk_used_rci'].state + ' Gb';
+      var total = Math.round(states['sensor.keenetic_disk_used_rci'].attributes.total / 1024 / 1024 / 1024) + ' Gb';
+      var label = '(' + states['sensor.keenetic_disk_used_rci'].attributes.label + ')';
+      return `
+      <ha-icon icon="mdi:sd" style="--mdc-icon-size: 13px;" ></ha-icon>` + ' ' + used + ' / ' + total + ' ' + label;
+    ]]]
+  button1:
+    card:
+      type: custom:button-card
+      entity: script.none_actions
+      show_name: false
+      icon: mdi:restart
+      size: 17%
+      aspect_ratio: 3.7/1
+      tap_action:
+        action: call-service
+        service: rest_command.keenetic_reboot_rci
+        haptic: medium
+        confirmation:
+          text: Перезагрузить Keenetic?
+  button2:
+    card:
+      type: custom:button-card
+      entity: switch.keenetic_5ghz_guest_ap_rci
+      show_name: false
+      icon: mdi:wifi-strength-lock-outline
+      size: 15%
+      aspect_ratio: 3.7/1
+      state:
+        - operator: template
+          value: >
+            [[[ return states['switch.keenetic_5ghz_guest_ap_rci'].state ===
+            'on' ]]]
+          icon: mdi:wifi-strength-4-lock-open
+  button3:
+    card:
+      type: custom:button-card
+      entity: device_tracker.a52_app
+      show_name: false
+      icon: mdi:chevron-right
+      size: 20%
+      aspect_ratio: 3.7/1
+      color: '#fefefe'
+      tap_action:
+        action: fire-dom-event
+        browser_mod:
+          command: popup
+          title: []
+          hide_header: true
+          large: true
+          deviceID:
+            - this
+          card:
+            type: custom:layout-card
+            layout_type: horizontal
+            layout:
+              max_cols: 3
+              width: 280
+            cards:
+              - type: custom:button-card
+                template: roomname
+                name: Keenetic
+              - type: vertical-stack
+                cards:
+                  - type: custom:auto-entities
+                    sort:
+                      method: entity_id
+                    card:
+                      type: entities
+                      title: []
+                      show_header_toggle: false
+                    filter:
+                      include:
+                        - entity_id: '*.*_rci'
+              - type: vertical-stack
+                cards:
+                  - type: custom:auto-entities
+                    sort:
+                      method: type
+                    card:
+                      type: entities
+                      title: []
+                      show_header_toggle: false
+                    filter:
+                      include:
+                        - entity_id: sensor.keenetic_gateway_*

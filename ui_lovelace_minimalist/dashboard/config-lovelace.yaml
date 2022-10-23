@@ -1,0 +1,133 @@
+---
+button_card_templates: !include_dir_merge_named "../../custom_components/ui_lovelace_minimalist/__ui_minimalist__/ulm_templates/"
+
+title: "Сервисное меню"
+theme: "minimalist-desktop"
+background: "var(--background-image)"
+# views: !include_dir_merge_list "views/"
+views:
+  - title: "Example View"
+    path: 0
+    icon: "mdi:flower"
+    cards:
+    - type: 'custom:button-card'
+      template: chip_back
+      variables:
+        ulm_chip_back_path: /ui-lovelace-minimalist/0
+    - type: horizontal-stack
+      cards:    
+        - type: "custom:button-card"
+          template: chip_navigate
+          label: 'Файловый редактор'
+          variables:
+            ulm_chip_navigate_path: /core_configurator
+            ulm_chip_navigate_icon: mdi:file-document
+        - type: "custom:button-card"
+          color_type: blank-card
+        - type: 'custom:button-card'
+          template: chip_icon_state
+          variables:
+            ulm_chip_icon_state_icon: '✍️️️'
+            ulm_chip_icon_state_entity: sensor.kolvo_avto
+        - type: 'custom:button-card'
+          template: chip_icon_state
+          variables:
+            ulm_chip_icon_state_icon: '💬'
+            ulm_chip_icon_state_entity: sensor.kolvo_sensor
+    - type: horizontal-stack
+      cards:  
+        - type: "custom:button-card"
+          template: chip_navigate
+          label: 'Автоматизации'
+          variables:
+            ulm_chip_navigate_path: /config/automation
+            ulm_chip_navigate_icon: mdi:arrow-decision-auto
+        - type: "custom:button-card"
+          color_type: blank-card
+        # - type: 'custom:button-card'
+        #   template: chip_icon_state
+        #   variables:
+        #     ulm_chip_icon_state_icon: '❗️'
+        #     ulm_chip_icon_state_entity: sensor.ned_obj
+        - type: 'custom:button-card'
+          template: chip_icon_state
+          variables:
+            ulm_chip_icon_state_icon: '💡'
+            ulm_chip_icon_state_entity: sensor.kolvo_lamp
+        - type: 'custom:button-card'
+          template: chip_icon_state
+          variables:
+            ulm_chip_icon_state_icon: '🎚'
+            ulm_chip_icon_state_entity: sensor.kolvo_switch
+    - type: horizontal-stack
+      cards:  
+        - type: "custom:button-card"
+          template: chip_navigate
+          label: 'Сервер'
+          variables:
+            ulm_chip_navigate_path: /config/server_control
+            ulm_chip_navigate_icon: mdi:server-network
+        - type: "custom:button-card"
+          template: chip_navigate
+          label: 'Разработка'
+          variables:
+            ulm_chip_navigate_path: /developer-tools/state
+            ulm_chip_navigate_icon: mdi:developer-board
+        - type: "custom:button-card"
+          color_type: blank-card
+        - type: 'custom:button-card'
+          template: chip_icon_state
+          variables:
+            ulm_chip_icon_state_icon: '💿'
+            ulm_chip_icon_state_entity: sensor.maria_db_size
+    - type: horizontal-stack
+      cards:  
+        - type: 'custom:button-card'
+          template: card_graph
+          entity: sensor.processor_use_percent
+          variables:
+            ulm_card_graph_color: "var(--google-blue)"
+            ulm_card_graph_name: CPU
+            ulm_card_graph_entity: sensor.processor_use_percent
+            ulm_card_graph_type: fill
+            ulm_card_graph_hours: 24
+        - type: 'custom:button-card'
+          template: card_graph
+          entity: sensor.memory_use_percent
+          variables:
+            ulm_card_graph_color: " var(--google-blue)"
+            ulm_card_graph_name: Память
+            ulm_card_graph_entity: sensor.memory_use_percent
+            ulm_card_graph_type: fill
+            ulm_card_graph_hours: 24
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

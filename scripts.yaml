@@ -1,0 +1,99 @@
+'1641758197660':
+  sequence:
+  - service: vacuum.toggle
+    data: {}
+  mode: single
+  alias: Уборка дома
+  icon: mdi:vacuum
+'1645956932530':
+  alias: уведомление в телегу алекс+мария (Дублировать)
+  sequence:
+  - service: notify.alexey
+    data:
+      message: hiй
+  mode: single
+  icon: mdi:bell-ring
+'1645956945435':
+  alias: уведомление в телегу алекс+мария (Дублироватьйй)
+  sequence:
+  - service: notify.alexey
+    data:
+      message: hiйй
+  mode: single
+  icon: mdi:bell-ring
+'1645956964178':
+  alias: уведомление в телегу алекс+мария (Дублироватьййррр) (Дублировать)
+  sequence:
+  - service: notify.alexey
+    data:
+      message: hiййоро
+  mode: single
+  icon: mdi:bell-ring
+'1645956987638':
+  alias: wled лунный свет
+  sequence:
+  - service: light.toggle
+    data:
+      rgb_color:
+      - 229
+      - 233
+      - 255
+      effect: Solid
+      brightness_pct: 1
+    target:
+      entity_id:
+      - light.wled
+      - light.wled_lamp
+  mode: single
+  icon: mdi:bell-ring
+'1646164408762':
+  sequence:
+  - service: light.turn_off
+    data: {}
+    target:
+      entity_id:
+      - light.svet_na_kukhne
+      - light.svet_v_koridore
+      - light.svet_v_zale
+      - light.wled
+      - light.wled_lamp
+  mode: single
+  alias: выключить весь свет
+'1646251150646':
+  sequence:
+  - service: automation.trigger
+    data: {}
+    target:
+      entity_id: automation.novaia_avtomatizatsiia_3
+  mode: single
+  alias: Недоступные обьекты уведомление
+'1648054945190':
+  sequence:
+  - service: media_player.play_media
+    data:
+      media_content_id: Кто-то набирает в домофон. Открыть?
+      media_content_type: dialog
+      extra:
+        volume_level: 1
+    target:
+      entity_id:
+      - media_player.yandex_station_ff98f0293d539c959187ecd2
+      - media_player.yandex_station_04207894c12008280310
+  mode: single
+  alias: Алиса при звонке в домофон
+'1659125111333':
+  alias: Включение тв
+  sequence:
+  - service: scene.turn_on
+    data: {}
+    target:
+      entity_id: scene.tv_2_power
+  mode: single
+'1661543447229':
+  alias: Обновить список покупок
+  sequence:
+  - service: media_player.play_media
+    entity_id: media_player.yandex_station_mini
+    data:
+      media_content_id: update
+      media_content_type: shopping_list

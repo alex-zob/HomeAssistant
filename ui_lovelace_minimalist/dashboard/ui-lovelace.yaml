@@ -1,0 +1,284 @@
+---
+button_card_templates: !include_dir_merge_named "../../custom_components/ui_lovelace_minimalist/__ui_minimalist__/ulm_templates/"
+
+title: "Мой дом"
+theme: "minimalist-desktop"
+background: "var(--background-image)"
+# views: !include_dir_merge_list "views/"
+views:
+  - title: "Example View"
+    path: 0
+    icon: "mdi:home-city-outline"
+    cards:
+    - type: "custom:button-card"
+      template: "card_welcome_scenes1"
+      variables:
+        #ulm_weather: weather.yandex_weather
+        ulm_chip_temperature_inside: sensor.sredn_temp_kv
+        ulm_chip_temperature_outside: sensor.yandex_weather_temperature
+        ulm_chip_temperature_weather: weather.yandex_weather
+        ulm_chip_presence_counter_residents: sensor.kolo_home_person
+        ulm_chip_presence_counter_guests: sensor.kolvo_person
+       # ulm_card_welcome_scenes_collapse: input_boolean.dlia_privetstvennoi_stseny
+        entity_1:
+          entity_id: script.1645956932530
+          icon: mdi:car
+          name: Скрипт
+        entity_2:
+          entity_id: script.1641758197660
+          icon: mdi:vacuum
+          name: Пыль
+        entity_3:
+          entity_id: script.1645956987638
+          icon: mdi:lightbulb-variant-outline
+          name: Сон
+          color: blue
+        entity_4:
+          entity_id: script.1646251150646
+          icon: mdi:help-circle-outline
+          name: Отчет
+          color: red
+        entity_5:
+          entity_id: script.1646164408762
+          icon: mdi:lightbulb-variant-outline
+          name: Выкл
+          color: yellow
+    # - type: custom:button-card
+    #   template: custom_card_paddy_welcome
+    #   variables:
+    #     ulm_custom_card_paddy_welcome_time: sensor.time
+    - type: 'custom:button-card'
+      template: card_title
+    # - type: horizontal-stack
+    #   cards:    
+    #     - type: 'custom:button-card'
+    #       template: card_person
+    #       variables:
+    #         ulm_card_person_entity: person.aleksei_zobnin
+    #         ulm_card_person_use_entity_picture: true
+    #         ulm_card_person_zone1: zone.home
+    #         ulm_card_person_zone2: zone.rabota
+    #     - type: 'custom:button-card'
+    #       template: card_person
+    #       variables:
+    #         ulm_card_person_entity: person.mariia_zobnina
+    #         ulm_card_person_use_entity_picture: true
+    #         ulm_card_person_zone1: zone.home
+    #     - type: "custom:button-card"
+    #       color_type: blank-card
+    #     # - type: "custom:button-card"
+    #     #   template: chip_navigate
+    #     #   variables:
+    #     #     ulm_chip_navigate_path: /lovelace-config/0
+    #     #     ulm_chip_navigate_icon: mdi:cog
+    # - type: horizontal-stack
+    #   cards:  
+    #     - type: 'custom:button-card'
+    #       template: chip_presence_detection
+    #       variables:
+    #         ulm_chip_presence_counter_residents: sensor.kolo_home_person
+    #         ulm_chip_presence_counter_guests: sensor.kolvo_person
+    #     - type: 'custom:button-card'
+    #       template: chip_icon_double_state
+    #       variables:
+    #         ulm_chip_icon_double_state_icon: '🚌'
+    #         ulm_chip_icon_double_state_entity_1: sensor.v_centr  
+    #         ulm_chip_icon_double_state_entity_2: sensor.v_bragino
+    #     # - type: 'custom:button-card'
+        #   template: chip_icon_state
+        #   variables:
+        #     ulm_chip_icon_state_icon: '💲'
+        #     ulm_chip_icon_state_entity: sensor.okr_dollar
+        # # - type: "custom:button-card"
+        #   color_type: blank-card
+        # - type: 'custom:button-card'
+        #   template: chip_icon_state
+        #   variables:
+        #     ulm_chip_icon_state_icon: '🛏️'
+        #     ulm_chip_icon_state_entity: binary_sensor.extra_kn_1711_online
+    - type: 'custom:button-card'
+      template: card_title
+    - type: horizontal-stack
+      cards:
+        - type: 'custom:button-card'
+          template:
+            - card_room_moy
+            - blue_no_state
+          name: Зал
+          entity: sensor.sost_temp_zal
+          icon: mdi:sofa
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace-zal/0 
+          variables:
+            label_use_temperature: false
+            label_use_brightness: false
+            entity_1:
+              entity_id: switch.0x158d0004330af1_channel_2
+              templates:
+                - yellow_on
+              tap_action:
+                action: toggle
+            entity_2:
+              entity_id: light.wled
+              templates:
+                - yellow_on
+              tap_action:
+                action: toggle
+              hold_action:
+                action: more-info
+            entity_3:
+              entity_id: light.wled_lamp
+              templates:
+                - yellow_on
+              tap_action:
+                action: toggle
+              hold_action:
+                action: more-info
+            entity_4:
+              entity_id: binary_sensor.0x158d000423b34f_motion
+              templates:
+                - green_on
+              tap_action:
+                action: none
+        - type: 'custom:button-card'
+          template:
+            - card_room_moy
+            - blue_no_state
+          name: Кухня
+          entity: sensor.sost_temp_cux
+          icon: mdi:countertop
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace-cux/0
+          variables:
+            label_use_temperature: false
+            label_use_brightness: false
+            entity_1:
+              entity_id: switch.0x158d00053ee70c_switch
+              templates:
+                - yellow_on
+              tap_action:
+                action: toggle
+            entity_2:
+              entity_id: binary_sensor.0x158d00068aca37_contact
+              templates:
+                - blue_on
+              tap_action:
+                action: none
+    - type: horizontal-stack
+      cards:
+        - type: 'custom:button-card'
+          template:
+            - card_room_moy
+            - blue_no_state
+          name: Корридор
+          entity: sensor.sost_temp_cor
+          icon: mdi:door-sliding-open
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace-cor/0
+          variables:
+            label_use_temperature: false
+            label_use_brightness: false
+            entity_1:
+              entity_id: switch.0x158d0004a005e6_channel_2
+              templates:
+                - yellow_on
+              tap_action:
+                action: toggle
+            entity_2:
+              entity_id: binary_sensor.0x158d000423b34f_motion
+              templates:
+                - green_on
+              tap_action:
+                action: none
+            entity_3:
+              entity_id: binary_sensor.0x158d00067ff4ad_contact
+              templates:
+                - blue_on
+              tap_action:
+                action: none
+            entity_4:
+              entity_id: switch.domofon_mute_sound
+              templates:
+                - red_on
+              tap_action:
+                action: toggle
+        - type: 'custom:button-card'
+          template:
+            - card_room_moy
+            - blue_no_state
+          name: Lada Vesta
+          entity: sensor.signalizatsiia_starline_interior_temperature
+          icon: mdi:car
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace-vesta/0
+          variables:
+            label_use_temperature: true
+            entity_1:
+              entity_id: switch.signalizatsiia_starline_engine
+              templates:
+                - yellow_on
+              tap_action:
+                action: none
+              hold_action:
+                action: toggle
+            entity_2:
+              entity_id: input_boolean.volume_vesta
+              templates: 
+                - red_on 
+              tap_action:
+                action: none
+            entity_3:
+              entity_id: input_boolean.lock_starline
+              templates:
+                - green_on
+                - red_off
+              tap_action:
+                action: none
+            entity_4:
+              entity_id: input_boolean.location_vesta
+              templates: 
+                - green_on
+              tap_action:
+                action: none
+    # - type: 'custom:button-card'
+    #   template: card_title
+    # - type: custom:button-card
+    #   template: card_navigate
+    #   variables:
+    #     ulm_card_navigate_path: /lovelace-config/0
+    #     ulm_card_navigate_title: Меню настроек
+    #     ulm_card_navigate_icon: mdi:cog
+
+
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          

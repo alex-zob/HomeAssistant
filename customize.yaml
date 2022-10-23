@@ -1,0 +1,25 @@
+climate.cubee_th123w_7869_thermostat:
+  hvac_modes:
+  - heat
+  min_temp: 10
+  max_temp: 30
+  preset_modes:
+  - Home
+  - Away
+  - Smart
+  - Sleep
+climate.thermostat:
+  hvac_modes:
+  - heat
+  preset_modes:
+  - Home
+  - Away
+  - Smart
+  - Sleep
+binary_sensor.0x158d00068aca37_contact:
+  device_class: window
+switch.domofon_accept_call: {}
+binary_sensor.mi_band_alexey:
+  device_class: presence
+binary_sensor.mi_band_mary:
+  device_class: presence

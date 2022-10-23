@@ -1,0 +1,125 @@
+#yandex_smart_home: # прокидывание устройств в УДЯ
+  notifier: # автообновление статуса устройств в УДЯ
+    - oauth_token: !secret oauth_token_yandex
+      skill_id: !secret skill_id_yandex
+      user_id: !secret user_id_yandex
+  settings: #указываем настройки общие
+    beta: true # принимаем участие в бете, например для book датчиков
+  filter: #филтр устройств идущих в УДЯ
+    exclude_domains: #исключаем типы устройства
+      - media_player
+      - switch
+      - sensor
+      - script
+      - light
+      - lock
+      - input_select
+      - input_boolean
+      - humidifier
+      - climate
+      - vacuum
+      - automation
+      - scene
+      - button
+      - input_button
+      - binary_sensor
+    include_entities: #разрешаем конкретное устройство
+      - switch.rozetka
+      - binary_sensor.0x158d00067ff4ad_contact
+      - binary_sensor.sensor_dv
+     # - switch.signalizatsiia_starline_engine
+      - light.wled_lamp
+      - light.wled
+      - button.domofon_reject_call
+      - climate.cubee_th123w_7869_thermostat
+      - media_player.ue40j5530
+      - cover.ventiliator
+      - cover.lazyroll_4dc741
+    exclude_entities: #исключаем конкретное устрлймтво
+      - vacuum.pylesos
+      - remote.yandex_station_108a8b32ebb8436babb450bf2bdbded8
+  entity_config:
+    cover.ventiliator:
+      name: Вентилятор
+      room: Зал
+      type: devices.types.thermostat
+      state_unknown: true
+      turn_on:
+        service: scene.turn_on
+        entity_id: scene.vkliuchit_ventiliator
+      turn_off:
+        service: scene.turn_on
+        entity_id: scene.fan_vykl_ventiliator
+      custom_toggles:
+        backlight: #подсветка
+          turn_on:
+            service: scene.turn_on
+            entity_id: scene.podsvetka
+          turn_off:
+            service: scene.turn_on
+            entity_id: scene.podsvetka
+        oscillation: #поворот
+          turn_on:
+            service: scene.turn_on
+            entity_id: scene.poverni_ventiliator
+          turn_off:
+            service: scene.turn_on
+            entity_id: scene.poverni_ventiliator
+    climate.cubee_th123w_7869_thermostat:
+      name: Термостат
+      room: Зал
+      properties:
+        - type: temperature
+          entity: sensor.a4c138898f05_temperature
+    light.wled_lamp:
+      name: Светильник
+      room: Зал
+      modes:
+        scene:
+          reading:
+            - Solid
+          garland:
+            - Halloween
+          candle:
+            - Fire Flicker
+          jungle:
+            - Chase Random
+          alarm:
+            - Palette
+    light.wled:
+      name: Лента
+      room: Зал
+      modes:
+        scene:
+          reading:
+            - Solid
+          garland:
+            - Halloween
+          candle:
+            - Fire Flicker
+          jungle:
+            - Chase Random
+          alarm:
+            - Palette
+    media_player.ue40j5530:
+    #   name: Телевизор
+    #   room: Зал
+    #   type: devices.types.media_device.tv
+      turn_on:
+        service: scene.turn_on
+        entity_id: scene.vkliuchenie_vykliucheni_televizora
+      turn_off:
+        service: scene.turn_on
+        entity_id: scene.vkliuchenie_vykliucheni_televizora
+    button.domofon_reject_call:
+      name: Домофон(целый)
+      room: Коридор
+      type: devices.types.openable
+      custom_toggles:
+        mute:
+          turn_on:
+            service: switch.turn_on
+            entity_id: switch.domofon_mute_sound
+          turn_off:
+            service: switch.turn_off
+            entity_id: switch.domofon_mute_sound
