@@ -3529,7 +3529,7 @@
       entity_id: input_boolean.budilnik_iz_ios
   mode: single
 - id: '1666028306421'
-  alias: Открыть шторы по датчику движения
+  alias: Открыть шторы по ДД без будильника
   description: ''
   trigger:
   - platform: state
@@ -3552,7 +3552,7 @@
       entity_id: cover.lazyroll_4dc741
   mode: single
 - id: '1666033769012'
-  alias: 'Открыть шторы по остановке будильника  '
+  alias: Открыть шторы будильник+ДД
   description: ''
   trigger:
   - platform: state
