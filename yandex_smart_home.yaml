@@ -24,6 +24,7 @@
       - input_button
       - binary_sensor
     include_entities: #разрешаем конкретное устройство
+      - switch.400090521350005701_bsh_common_setting_powerstate
       - switch.rozetka
       - binary_sensor.0x158d00067ff4ad_contact
       - binary_sensor.sensor_dv
@@ -65,6 +66,33 @@
           turn_off:
             service: scene.turn_on
             entity_id: scene.poverni_ventiliator
+    switch.400090521350005701_bsh_common_setting_powerstate:
+      name: Посудомойка
+      room: Кухня
+      type: devices.types.dishwasher
+      modes:
+        dishwashing:
+          eco: ['Dishcare.Dishwasher.Program.Eco50']
+          normal: ['Dishcare.Dishwasher.Program.Normal65']
+          glass: ['Dishcare.Dishwasher.Program.Quick45']
+          pre_rinse: ['Dishcare.Dishwasher.Program.PreRinse']
+          express: ['Dishcare.Dishwasher.Program.Quick65']
+      custom_modes:
+        dishwashing:
+          set_mode:
+            service: select.select_option
+            entity_id: select.400090521350005701_programs
+            data:
+              option: '{{ mode }}'
+      custom_toggles:
+        pause:
+          state_entity_id: sensor.posmash
+          turn_on:
+            service: button.press
+            entity_id: button.400090521350005701_stop
+          turn_off:
+            service: button.press
+            entity_id: button.400090521350005701_start_pause
     climate.cubee_th123w_7869_thermostat:
       name: Термостат
       room: Зал
