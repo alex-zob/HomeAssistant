@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.lovelace_mushroom_corr",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "cards": [
+            {
+              "type": "custom:mushroom-chips-card",
+              "chips": [
+                {
+                  "type": "back"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "title": "Коридор"
+    }
+  }
+}

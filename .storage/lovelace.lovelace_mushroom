@@ -1,0 +1,497 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.lovelace_mushroom",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "cards": [
+            {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-chips-card",
+                      "chips": [
+                        {
+                          "type": "weather",
+                          "entity": "weather.yandex_weather",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "show_conditions": true,
+                          "show_temperature": true,
+                          "hold_action": {
+                            "action": "none"
+                          }
+                        },
+                        {
+                          "type": "conditional",
+                          "conditions": [
+                            {
+                              "entity": "update.home_assistant_core_update",
+                              "state": "on"
+                            }
+                          ],
+                          "chip": {
+                            "type": "template",
+                            "double_tap_action": {
+                              "action": "none"
+                            },
+                            "icon": "mdi:update",
+                            "icon_color": "green",
+                            "picture": "",
+                            "content": "",
+                            "tap_action": {
+                              "action": "navigate",
+                              "navigation_path": "/config/updates"
+                            },
+                            "hold_action": {
+                              "action": "none"
+                            }
+                          }
+                        },
+                        {
+                          "type": "conditional",
+                          "conditions": [
+                            {
+                              "entity": "sensor.ned_obj",
+                              "state_not": "0"
+                            }
+                          ],
+                          "chip": {
+                            "type": "template",
+                            "double_tap_action": {
+                              "action": "none"
+                            },
+                            "icon": "mdi:information",
+                            "icon_color": "red",
+                            "tap_action": {
+                              "action": "call-service",
+                              "service": "script.1646251150646",
+                              "data": {},
+                              "target": {}
+                            },
+                            "hold_action": {
+                              "action": "none"
+                            },
+                            "content": ""
+                          }
+                        },
+                        {
+                          "type": "template",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "tap_action": {
+                            "action": "navigate",
+                            "navigation_path": "/config/dashboard"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "icon": "mdi:wrench"
+                        }
+                      ],
+                      "alignment": "center"
+                    }
+                  ]
+                },
+                {
+                  "type": "vertical-stack",
+                  "cards": [
+                    {
+                      "type": "horizontal-stack",
+                      "cards": [
+                        {
+                          "type": "custom:mushroom-chips-card",
+                          "chips": [
+                            {
+                              "type": "template",
+                              "double_tap_action": {
+                                "action": "none"
+                              },
+                              "icon": "mdi:home-thermometer",
+                              "content": "{{states('sensor.sredn_temp_kv')|round(1, 'common')}}℃ / {{ ((states('sensor.0x158d00040cb32a_humidity')|int)+(states('sensor.0x158d00040cb32a_humidity')|int))/2}}%",
+                              "hold_action": {
+                                "action": "none"
+                              },
+                              "tap_action": {
+                                "action": "none"
+                              },
+                              "icon_color": ""
+                            },
+                            {
+                              "type": "entity",
+                              "entity": "switch.domofon_mute_sound",
+                              "icon_color": "red",
+                              "content_info": "none",
+                              "tap_action": {
+                                "action": "toggle"
+                              },
+                              "hold_action": {
+                                "action": "none"
+                              },
+                              "double_tap_action": {
+                                "action": "none"
+                              }
+                            },
+                            {
+                              "type": "entity",
+                              "entity": "input_boolean.lock_starline",
+                              "icon_color": "green",
+                              "content_info": "none",
+                              "double_tap_action": {
+                                "action": "none"
+                              },
+                              "hold_action": {
+                                "action": "none"
+                              }
+                            },
+                            {
+                              "type": "conditional",
+                              "conditions": [
+                                {
+                                  "entity": "binary_sensor.0x158d00067ff4ad_contact",
+                                  "state": "on"
+                                }
+                              ],
+                              "chip": {
+                                "type": "template",
+                                "icon": "mdi:door-open",
+                                "icon_color": "red"
+                              }
+                            },
+                            {
+                              "type": "conditional",
+                              "conditions": [
+                                {
+                                  "entity": "binary_sensor.0x158d00068aca37_contact",
+                                  "state": "on"
+                                }
+                              ],
+                              "chip": {
+                                "type": "template",
+                                "double_tap_action": {
+                                  "action": "none"
+                                },
+                                "icon": "mdi:window-closed",
+                                "hold_action": {
+                                  "action": "none"
+                                },
+                                "tap_action": {
+                                  "action": "none"
+                                },
+                                "icon_color": "red"
+                              }
+                            },
+                            {
+                              "type": "conditional",
+                              "conditions": [
+                                {
+                                  "entity": "binary_sensor.0x158d000423b34f_motion",
+                                  "state": "on"
+                                }
+                              ],
+                              "chip": {
+                                "type": "template",
+                                "icon": "mdi:motion-sensor",
+                                "icon_color": "{% if states('sensor.kolo_home_person')|int == 0 %} red\n{% elif states('sensor.kolo_home_person')|int != 0 %} green\n{% endif%}"
+                              }
+                            },
+                            {
+                              "type": "conditional",
+                              "conditions": [
+                                {
+                                  "entity": "sensor.400090521350005701_bsh_common_status_operationstate",
+                                  "state_not": "BSH.Common.EnumType.OperationState.Inactive"
+                                }
+                              ],
+                              "chip": {
+                                "type": "template",
+                                "icon": "mdi:state-machine",
+                                "icon_color": "{% if states('sensor.400090521350005701_bsh_common_status_operationstate')== \"BSH.Common.EnumType.OperationState.Ready\" %} yellow\n{% elif states('sensor.400090521350005701_bsh_common_status_operationstate') == \"BSH.Common.EnumType.OperationState.Run\" %} green\n{% endif%}"
+                              }
+                            }
+                          ],
+                          "alignment": "center"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal-stack",
+                      "cards": [
+                        {
+                          "type": "custom:mushroom-person-card",
+                          "entity": "person.aleksei_zobnin",
+                          "layout": "vertical",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "tap_action": {
+                            "action": "none"
+                          },
+                          "icon_type": "entity-picture",
+                          "secondary_info": "none",
+                          "primary_info": "name"
+                        },
+                        {
+                          "type": "custom:mushroom-person-card",
+                          "entity": "person.mariia_zobnina",
+                          "layout": "vertical",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "tap_action": {
+                            "action": "none"
+                          },
+                          "icon_type": "entity-picture",
+                          "secondary_info": "none",
+                          "primary_info": "name",
+                          "fill_container": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "custom:mushroom-title-card",
+                  "title": "Комнаты",
+                  "subtitle": ""
+                },
+                {
+                  "type": "vertical-stack",
+                  "cards": [
+                    {
+                      "type": "horizontal-stack",
+                      "cards": [
+                        {
+                          "type": "custom:mushroom-template-card",
+                          "primary": "Кухня",
+                          "secondary": "123456789012345678901234567890",
+                          "icon": "mdi:countertop",
+                          "tap_action": {
+                            "action": "navigate",
+                            "navigation_path": "/lovelace-mushroom-pc/default_view"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "layout": "vertical",
+                          "entity": "",
+                          "fill_container": false,
+                          "multiline_secondary": false,
+                          "picture": "",
+                          "badge_icon": "mdi:light-flood-down",
+                          "badge_color": "red",
+                          "icon_color": "blue"
+                        },
+                        {
+                          "type": "custom:mushroom-template-card",
+                          "primary": "Зал",
+                          "secondary": "данные",
+                          "icon": "",
+                          "tap_action": {
+                            "action": "navigate",
+                            "navigation_path": "/lovelace-mushroom-zal/0"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal-stack",
+                      "cards": [
+                        {
+                          "type": "custom:mushroom-template-card",
+                          "primary": "Корридор",
+                          "secondary": "How are you?",
+                          "icon": "",
+                          "tap_action": {
+                            "action": "navigate",
+                            "navigation_path": "/lovelace-mushroom-corr/0"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          }
+                        },
+                        {
+                          "type": "custom:mushroom-template-card",
+                          "primary": "Машина",
+                          "secondary": "How are you?",
+                          "icon": "",
+                          "tap_action": {
+                            "action": "navigate",
+                            "navigation_path": "/lovelace-mushroom-vesta/0"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "custom:mushroom-title-card",
+                  "title": "Часто используемое"
+                },
+                {
+                  "type": "vertical-stack",
+                  "cards": [
+                    {
+                      "type": "horizontal-stack",
+                      "cards": [
+                        {
+                          "type": "custom:mushroom-light-card",
+                          "entity": "light.svet_v_zale",
+                          "name": "Зал",
+                          "layout": "horizontal",
+                          "secondary_info": "none",
+                          "tap_action": {
+                            "action": "toggle"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          }
+                        },
+                        {
+                          "type": "custom:mushroom-light-card",
+                          "entity": "light.svet_na_kukhne",
+                          "name": "Кухня",
+                          "layout": "horizontal",
+                          "secondary_info": "none",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "tap_action": {
+                            "action": "toggle"
+                          }
+                        },
+                        {
+                          "type": "custom:mushroom-light-card",
+                          "entity": "light.svet_v_koridore",
+                          "name": "Коридор",
+                          "layout": "horizontal",
+                          "secondary_info": "none",
+                          "tap_action": {
+                            "action": "toggle"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal-stack",
+                      "cards": [
+                        {
+                          "type": "custom:mushroom-light-card",
+                          "entity": "light.nochnik",
+                          "layout": "vertical",
+                          "secondary_info": "none",
+                          "use_light_color": true,
+                          "show_brightness_control": true,
+                          "show_color_temp_control": true,
+                          "show_color_control": true,
+                          "tap_action": {
+                            "action": "toggle"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "collapsible_controls": true,
+                          "icon": "mdi:track-light"
+                        },
+                        {
+                          "type": "custom:mushroom-light-card",
+                          "entity": "light.wled",
+                          "secondary_info": "none",
+                          "layout": "vertical",
+                          "use_light_color": true,
+                          "show_brightness_control": true,
+                          "show_color_temp_control": true,
+                          "show_color_control": true,
+                          "tap_action": {
+                            "action": "toggle"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "collapsible_controls": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "horizontal-stack",
+                      "cards": [
+                        {
+                          "type": "custom:mushroom-cover-card",
+                          "entity": "cover.lazyroll_4dc741",
+                          "layout": "vertical",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "tap_action": {
+                            "action": "none"
+                          },
+                          "show_position_control": false,
+                          "show_buttons_control": true,
+                          "name": "Шторы на кухне"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "title": "Дом"
+    }
+  }
+}

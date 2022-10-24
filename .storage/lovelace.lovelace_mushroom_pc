@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.lovelace_mushroom_pc",
+  "data": {
+    "config": {
+      "title": "Кухня",
+      "views": [
+        {
+          "theme": "Backend-selected",
+          "path": "default_view",
+          "title": "Кухня",
+          "icon": "mdi:countertop",
+          "badges": [],
+          "cards": [
+            {
+              "type": "custom:mushroom-chips-card",
+              "chips": [
+                {
+                  "type": "back"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
