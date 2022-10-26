@@ -71,6 +71,9 @@
       room: Кухня
       type: devices.types.dishwasher
       modes:
+        # program:
+        #   fast: ['on']
+        #   normal: ['off']
         dishwashing:
           eco: ['Dishcare.Dishwasher.Program.Eco50']
           normal: ['Dishcare.Dishwasher.Program.Normal65']
@@ -78,6 +81,10 @@
           pre_rinse: ['Dishcare.Dishwasher.Program.PreRinse']
           express: ['Dishcare.Dishwasher.Program.Quick65']
       custom_modes:
+        # program:
+        #   set_mode:
+        #     service: switch_turn_{{ mode }}
+        #     entity_id: switch.400090521350005701_dishcare_dishwasher_option_hygieneplus
         dishwashing:
           set_mode:
             service: select.select_option

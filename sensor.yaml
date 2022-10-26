@@ -51,7 +51,7 @@
     #   sost_temp_cor:
     #     value_template: "{% if states('sensor.temp_cor')|int < 20 %} Холодно {% elif states('sensor.temp_cor')|int <23 %} Прохладно {% elif states('sensor.temp_cor')|int <25 %} Комфортно {% elif states('sensor.temp_cor')|int >= 25 %} Жарко {% endif%}"
       posmash:
-        value_template: "{% if is_state('sensor.400090521350005701_bsh_common_status_operationstate','BSH.Common.EnumType.OperationState.Run')%} on {% else%} off {% endif%}"
+        value_template: "{% if is_state('sensor.400090521350005701_bsh_common_status_operationstate','BSH.Common.EnumType.OperationState.Run')%} off {% else%} on {% endif%}"
       temp_cor:
         value_template: "{{((states('sensor.0x158d00040cb32a_temperature')|int) + (states('sensor.a4c138898f05_temperature')|int))/2}}"
         unit_of_measurement: "°C"
