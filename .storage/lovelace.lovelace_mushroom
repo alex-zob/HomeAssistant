@@ -30,6 +30,33 @@
                           }
                         },
                         {
+                          "type": "template",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "icon": "mdi:home-thermometer",
+                          "content": "{{states('sensor.sredn_temp_kv')|round(1, 'common')}}℃ / {{ ((states('sensor.0x158d00040cb32a_humidity')|int)+(states('sensor.0x158d00040cb32a_humidity')|int))/2}}%",
+                          "hold_action": {
+                            "action": "none"
+                          },
+                          "tap_action": {
+                            "action": "none"
+                          },
+                          "icon_color": ""
+                        },
+                        {
+                          "type": "entity",
+                          "entity": "input_boolean.lock_starline",
+                          "icon_color": "green",
+                          "content_info": "none",
+                          "double_tap_action": {
+                            "action": "none"
+                          },
+                          "hold_action": {
+                            "action": "none"
+                          }
+                        },
+                        {
                           "type": "conditional",
                           "conditions": [
                             {
@@ -56,33 +83,6 @@
                           }
                         },
                         {
-                          "type": "conditional",
-                          "conditions": [
-                            {
-                              "entity": "sensor.ned_obj",
-                              "state_not": "0"
-                            }
-                          ],
-                          "chip": {
-                            "type": "template",
-                            "double_tap_action": {
-                              "action": "none"
-                            },
-                            "icon": "mdi:information",
-                            "icon_color": "red",
-                            "tap_action": {
-                              "action": "call-service",
-                              "service": "script.1646251150646",
-                              "data": {},
-                              "target": {}
-                            },
-                            "hold_action": {
-                              "action": "none"
-                            },
-                            "content": ""
-                          }
-                        },
-                        {
                           "type": "template",
                           "double_tap_action": {
                             "action": "none"
@@ -102,126 +102,12 @@
                   ]
                 },
                 {
+                  "type": "custom:mushroom-title-card",
+                  "title": ""
+                },
+                {
                   "type": "vertical-stack",
                   "cards": [
-                    {
-                      "type": "horizontal-stack",
-                      "cards": [
-                        {
-                          "type": "custom:mushroom-chips-card",
-                          "chips": [
-                            {
-                              "type": "template",
-                              "double_tap_action": {
-                                "action": "none"
-                              },
-                              "icon": "mdi:home-thermometer",
-                              "content": "{{states('sensor.sredn_temp_kv')|round(1, 'common')}}℃ / {{ ((states('sensor.0x158d00040cb32a_humidity')|int)+(states('sensor.0x158d00040cb32a_humidity')|int))/2}}%",
-                              "hold_action": {
-                                "action": "none"
-                              },
-                              "tap_action": {
-                                "action": "none"
-                              },
-                              "icon_color": ""
-                            },
-                            {
-                              "type": "entity",
-                              "entity": "switch.domofon_mute_sound",
-                              "icon_color": "red",
-                              "content_info": "none",
-                              "tap_action": {
-                                "action": "toggle"
-                              },
-                              "hold_action": {
-                                "action": "none"
-                              },
-                              "double_tap_action": {
-                                "action": "none"
-                              }
-                            },
-                            {
-                              "type": "entity",
-                              "entity": "input_boolean.lock_starline",
-                              "icon_color": "green",
-                              "content_info": "none",
-                              "double_tap_action": {
-                                "action": "none"
-                              },
-                              "hold_action": {
-                                "action": "none"
-                              }
-                            },
-                            {
-                              "type": "conditional",
-                              "conditions": [
-                                {
-                                  "entity": "binary_sensor.0x158d00067ff4ad_contact",
-                                  "state": "on"
-                                }
-                              ],
-                              "chip": {
-                                "type": "template",
-                                "icon": "mdi:door-open",
-                                "icon_color": "red"
-                              }
-                            },
-                            {
-                              "type": "conditional",
-                              "conditions": [
-                                {
-                                  "entity": "binary_sensor.0x158d00068aca37_contact",
-                                  "state": "on"
-                                }
-                              ],
-                              "chip": {
-                                "type": "template",
-                                "double_tap_action": {
-                                  "action": "none"
-                                },
-                                "icon": "mdi:window-closed",
-                                "hold_action": {
-                                  "action": "none"
-                                },
-                                "tap_action": {
-                                  "action": "none"
-                                },
-                                "icon_color": "red"
-                              }
-                            },
-                            {
-                              "type": "conditional",
-                              "conditions": [
-                                {
-                                  "entity": "binary_sensor.0x158d000423b34f_motion",
-                                  "state": "on"
-                                }
-                              ],
-                              "chip": {
-                                "type": "template",
-                                "icon": "mdi:motion-sensor",
-                                "icon_color": "{% if states('sensor.kolo_home_person')|int == 0 %} red\n{% elif states('sensor.kolo_home_person')|int != 0 %} green\n{% endif%}"
-                              }
-                            },
-                            {
-                              "type": "conditional",
-                              "conditions": [
-                                {
-                                  "entity": "sensor.400090521350005701_bsh_common_status_operationstate",
-                                  "state_not": "BSH.Common.EnumType.OperationState.Inactive"
-                                }
-                              ],
-                              "chip": {
-                                "type": "template",
-                                "icon": "mdi:dishwasher",
-                                "icon_color": "{% if states('sensor.400090521350005701_bsh_common_status_operationstate')== \"BSH.Common.EnumType.OperationState.Ready\" %} yellow\n{% elif states('sensor.400090521350005701_bsh_common_status_operationstate') == \"BSH.Common.EnumType.OperationState.Run\" %} green\n{% endif%}"
-                              }
-                            }
-                          ],
-                          "alignment": "center"
-                        }
-                      ]
-                    },
                     {
                       "type": "horizontal-stack",
                       "cards": [
@@ -273,7 +159,7 @@
                     "action": "navigate",
                     "navigation_path": "/lovelace-mushroom-zal/0"
                   },
-                  "icon": "mdi:countertop-outline",
+                  "icon": "mdi:sofa-outline",
                   "show_icon": true,
                   "rows": [
                     {
@@ -295,14 +181,8 @@
                           }
                         },
                         {
-                          "entity": "media_player.yandex_station_04207894c12008280310",
-                          "name": "Станция",
-                          "icon": "mdi:multimedia",
-                          "show_icon": true
-                        },
-                        {
-                          "entity": "media_player.ue40j5530",
-                          "name": "ТВ",
+                          "entity": "light.nochnik",
+                          "name": "Ночник",
                           "show_icon": true
                         }
                       ]
@@ -313,17 +193,39 @@
                           "entity": "climate.cubee_th123w_7869_thermostat",
                           "name": "Термостат",
                           "show_icon": true
+                        },
+                        {
+                          "entity": "humidifier.deerma_jsq5_c8cc_humidifier",
+                          "name": "Увлажнитель",
+                          "show_icon": true
+                        },
+                        {
+                          "entity": "media_player.yandex_station_04207894c12008280310",
+                          "name": "Станция",
+                          "icon": "mdi:google-home",
+                          "show_icon": true
+                        },
+                        {
+                          "entity": "media_player.ue40j5530",
+                          "name": "ТВ",
+                          "show_icon": true
                         }
                       ]
                     }
                   ],
                   "info_entities": [
                     {
-                      "entity": "sensor.0x158d00040cb32a_temperature",
-                      "show_icon": true
+                      "entity": "sensor.a4c138898f05_temperature",
+                      "show_icon": true,
+                      "icon": {
+                        "icon": "mdi:home-thermometer-outline",
+                        "template": {
+                          "styles": "if (entity.state < 20) return 'color: red'; if (entity.state <23.5) return 'color: blue'; if (entity.state <25) return 'color: green'; if (entity.state >= 25) return 'color: orange';"
+                        }
+                      }
                     },
                     {
-                      "entity": "sensor.0x158d00040cb32a_humidity",
+                      "entity": "sensor.a4c138898f05_humidity",
                       "show_icon": true
                     }
                   ]
@@ -350,7 +252,7 @@
                     {
                       "entity": "media_player.yandex_station_ff98f0293d539c959187ecd2",
                       "name": "Станция",
-                      "icon": "mdi:multimedia",
+                      "icon": "mdi:google-home",
                       "show_icon": true
                     },
                     {
@@ -367,7 +269,12 @@
                   "info_entities": [
                     {
                       "entity": "sensor.0x158d00040cb32a_temperature",
-                      "show_icon": true
+                      "show_icon": true,
+                      "icon": {
+                        "template": {
+                          "styles": "if (entity.state < 20) return 'color: red'; if (entity.state <23.5) return 'color: blue'; if (entity.state <25) return 'color: green'; if (entity.state >= 25) return 'color: orange';"
+                        }
+                      }
                     },
                     {
                       "entity": "sensor.0x158d00040cb32a_humidity",
@@ -375,7 +282,21 @@
                     },
                     {
                       "entity": "binary_sensor.0x158d00068aca37_contact",
-                      "show_icon": true
+                      "show_icon": true,
+                      "hide_if": {
+                        "conditions": [
+                          {
+                            "condition": "equals",
+                            "entity": "binary_sensor.0x158d00068aca37_contact",
+                            "value": "off"
+                          }
+                        ]
+                      },
+                      "icon": {
+                        "template": {
+                          "styles": "if (entity.state == 'on') return 'color: red';"
+                        }
+                      }
                     }
                   ]
                 },
@@ -387,7 +308,7 @@
                     "action": "navigate",
                     "navigation_path": "/lovelace-mushroom-corr/0"
                   },
-                  "icon": "mdi:countertop-outline",
+                  "icon": "mdi:image-frame",
                   "show_icon": true,
                   "entities": [
                     {
@@ -401,16 +322,52 @@
                   ],
                   "info_entities": [
                     {
-                      "entity": "sensor.0x158d00040cb32a_temperature",
-                      "show_icon": true
-                    },
-                    {
-                      "entity": "sensor.0x158d00040cb32a_humidity",
-                      "show_icon": true
+                      "entity": "binary_sensor.0x158d000423b34f_motion",
+                      "show_icon": true,
+                      "hide_if": {
+                        "conditions": [
+                          {
+                            "condition": "equals",
+                            "entity": "binary_sensor.0x158d000423b34f_motion",
+                            "value": "off"
+                          }
+                        ]
+                      },
+                      "icon": {
+                        "template": {
+                          "styles": "if (entity.state == 'on') return 'color: green';"
+                        }
+                      }
                     },
                     {
                       "entity": "binary_sensor.0x158d00067ff4ad_contact",
-                      "show_icon": true
+                      "show_icon": true,
+                      "hide_if": {
+                        "conditions": [
+                          {
+                            "condition": "equals",
+                            "entity": "binary_sensor.0x158d00067ff4ad_contact",
+                            "value": "off"
+                          }
+                        ]
+                      },
+                      "icon": {
+                        "template": {
+                          "styles": "if (entity.state == 'on') return 'color: red';"
+                        }
+                      }
+                    },
+                    {
+                      "entity": "switch.domofon_mute_sound",
+                      "show_icon": true,
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "icon": {
+                        "template": {
+                          "styles": "if (entity.state == 'on') return 'color: red'; else return 'color: black';"
+                        }
+                      }
                     }
                   ]
                 }
