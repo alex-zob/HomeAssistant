@@ -43,63 +43,69 @@
                             "action": "none"
                           },
                           "icon_color": ""
-                        },
-                        {
-                          "type": "entity",
-                          "entity": "input_boolean.lock_starline",
-                          "icon_color": "green",
-                          "content_info": "none",
-                          "double_tap_action": {
-                            "action": "none"
-                          },
-                          "hold_action": {
-                            "action": "none"
-                          }
-                        },
-                        {
-                          "type": "conditional",
-                          "conditions": [
-                            {
-                              "entity": "update.home_assistant_core_update",
-                              "state": "on"
-                            }
-                          ],
-                          "chip": {
-                            "type": "template",
-                            "double_tap_action": {
-                              "action": "none"
-                            },
-                            "icon": "mdi:update",
-                            "icon_color": "green",
-                            "picture": "",
-                            "content": "",
-                            "tap_action": {
-                              "action": "navigate",
-                              "navigation_path": "/config/updates"
-                            },
-                            "hold_action": {
-                              "action": "none"
-                            }
-                          }
-                        },
-                        {
-                          "type": "template",
-                          "double_tap_action": {
-                            "action": "none"
-                          },
-                          "tap_action": {
-                            "action": "navigate",
-                            "navigation_path": "/config/dashboard"
-                          },
-                          "hold_action": {
-                            "action": "none"
-                          },
-                          "icon": "mdi:wrench"
                         }
                       ],
                       "alignment": "center"
                     }
                   ]
+                },
+                {
+                  "type": "custom:mushroom-chips-card",
+                  "chips": [
+                    {
+                      "type": "entity",
+                      "entity": "input_boolean.lock_starline",
+                      "icon_color": "green",
+                      "content_info": "none",
+                      "double_tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "conditional",
+                      "conditions": [
+                        {
+                          "entity": "update.home_assistant_core_update",
+                          "state": "on"
+                        }
+                      ],
+                      "chip": {
+                        "type": "template",
+                        "double_tap_action": {
+                          "action": "none"
+                        },
+                        "icon": "mdi:update",
+                        "icon_color": "green",
+                        "picture": "",
+                        "content": "",
+                        "tap_action": {
+                          "action": "navigate",
+                          "navigation_path": "/config/updates"
+                        },
+                        "hold_action": {
+                          "action": "none"
+                        }
+                      }
+                    },
+                    {
+                      "type": "template",
+                      "double_tap_action": {
+                        "action": "none"
+                      },
+                      "tap_action": {
+                        "action": "navigate",
+                        "navigation_path": "/config/dashboard"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "icon": "mdi:wrench"
+                    }
+                  ],
+                  "alignment": "center"
                 },
                 {
                   "type": "custom:mushroom-title-card",
