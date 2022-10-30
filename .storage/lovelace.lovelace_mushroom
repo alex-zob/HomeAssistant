@@ -202,7 +202,7 @@
                         {
                           "entity": "media_player.yandex_station_04207894c12008280310",
                           "name": "Станция",
-                          "icon": "mdi:google-home",
+                          "icon": "yandex:station",
                           "show_icon": true
                         },
                         {
@@ -252,7 +252,7 @@
                     {
                       "entity": "media_player.yandex_station_ff98f0293d539c959187ecd2",
                       "name": "Станция",
-                      "icon": "mdi:google-home",
+                      "icon": "yandex:station-mini",
                       "show_icon": true
                     },
                     {

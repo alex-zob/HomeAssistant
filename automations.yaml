@@ -1203,16 +1203,14 @@
   alias: Тестовая для уведомлентюий в телеграм
   description: ''
   trigger:
-  - platform: device
-    type: turned_on
-    device_id: d31e6b380d92db814e44d0ba0cbaee8b
-    entity_id: switch.0x158d00053ee70c_switch
-    domain: switch
+  - platform: state
+    entity_id:
+    - sensor.0x158d000423b34f_illuminance
   condition: []
   action:
-  - service: notify.alexey
+  - service: notify.group_bot
     data:
-      message: В комнате холодно! Добавь температуры на термостат
+      message: Освещенность изменилась на {{states('sensor.0x158d000423b34f_illuminance')}}
   mode: single
 - id: '1632165821995'
   alias: Предупреждение если температура малины больше 65гр
@@ -3542,12 +3540,13 @@
     state: closed
     entity_id: cover.lazyroll_4dc741
   - condition: time
-    after: 07:00:00
-    before: 09:00:00
+    after: 08:00:00
+    before: '10:00:00'
     weekday: []
   action:
-  - service: cover.open_cover
-    data: {}
+  - service: cover.set_cover_tilt_position
+    data:
+      tilt_position: 65
     target:
       entity_id: cover.lazyroll_4dc741
   mode: single
