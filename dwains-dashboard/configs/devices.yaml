@@ -1,0 +1,39 @@
+person:
+  icon: mdi:account-multiple
+  show_in_navbar: false
+  hidden: false
+  sort_order: 1
+switch:
+  sort_order: 2
+media_player:
+  sort_order: 3
+device_tracker:
+  sort_order: 4
+binary_sensor:
+  sort_order: 5
+select:
+  sort_order: 6
+remote:
+  sort_order: 7
+sensor:
+  sort_order: 8
+alarm_control_panel:
+  sort_order: 9
+number:
+  sort_order: 10
+light:
+  sort_order: 11
+weather:
+  sort_order: 12
+button:
+  sort_order: 13
+update:
+  sort_order: 14
+climate:
+  sort_order: 15
+humidifier:
+  sort_order: 16
+vacuum:
+  sort_order: 17
+cover:
+  sort_order: 18

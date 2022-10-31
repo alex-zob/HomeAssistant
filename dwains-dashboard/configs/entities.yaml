@@ -1,0 +1,159 @@
+cover.lazyroll_4dc741:
+  custom_popup: true
+person.mariia_zobnina:
+  hidden: false
+person.aleksei_zobnin:
+  custom_popup: true
+media_player.yandex_station_ff98f0293d539c959187ecd2:
+  hidden: false
+  excluded: false
+  disabled: false
+  friendly_name: ''
+  col_span: '2'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+  devices_sort_order: 3
+media_player.yandex_station_04207894c12008280310:
+  devices_sort_order: 2
+  hidden: false
+  excluded: false
+  disabled: false
+  friendly_name: ''
+  col_span: '2'
+  row_span: '1'
+  col_span_lg: '2'
+  row_span_lg: '1'
+  col_span_xl: '2'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+  sort_order: 1
+media_player.ue40j5530:
+  devices_sort_order: 1
+  hidden: false
+  excluded: false
+  disabled: false
+  friendly_name: ''
+  col_span: '2'
+  row_span: '1'
+  col_span_lg: '2'
+  row_span_lg: '1'
+  col_span_xl: '2'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+  sort_order: 2
+switch.rozetka:
+  disabled: false
+  sort_order: 6
+remote.0x842e14fffe4dff37_pair:
+  disabled: true
+switch.0x842e14fffe4dff37_firmware_lock:
+  disabled: true
+switch.0x158d0004330af1_channel_1:
+  disabled: true
+switch.0x158d0004330af1_channel_2:
+  disabled: true
+sensor.0x158d0004330af1_action:
+  disabled: true
+alarm_control_panel.0x842e14fffe4dff37_alarm:
+  disabled: true
+sensor.tec_temp_ter:
+  disabled: true
+light.svet_v_zale:
+  disabled: false
+  sort_order: 3
+binary_sensor.wled_firmware:
+  disabled: true
+light.wled:
+  disabled: false
+  sort_order: 4
+number.wled_speed:
+  disabled: true
+number.wled_intensity:
+  disabled: true
+select.wled_live_override:
+  disabled: true
+select.wled_color_palette:
+  disabled: true
+sensor.wled_estimated_current:
+  disabled: true
+sensor.wled_led_count:
+  disabled: true
+sensor.wled_max_current:
+  disabled: true
+switch.wled_nightlight:
+  disabled: true
+switch.wled_sync_send:
+  disabled: true
+switch.wled_sync_receive:
+  disabled: true
+switch.wled_reverse:
+  disabled: true
+button.wled_restart:
+  disabled: true
+select.wled_tv_color_palette_2:
+  disabled: true
+sensor.wled_tv_estimated_current_2:
+  disabled: true
+binary_sensor.wled_tv_firmware_2:
+  disabled: true
+number.wled_tv_intensity_2:
+  disabled: true
+sensor.wled_tv_led_count_2:
+  disabled: true
+select.wled_tv_live_override_2:
+  disabled: true
+sensor.wled_tv_max_current_2:
+  disabled: true
+switch.wled_tv_nightlight_2:
+  disabled: true
+button.wled_tv_restart_2:
+  disabled: true
+switch.wled_tv_reverse_2:
+  disabled: true
+number.wled_tv_speed_2:
+  disabled: true
+switch.wled_tv_sync_receive_2:
+  disabled: true
+switch.wled_tv_sync_send_2:
+  disabled: true
+light.wled_lamp:
+  disabled: true
+sensor.0x842e14fffe4dff37_gateway:
+  disabled: true
+sensor.0x158d0004330af1_zigbee:
+  disabled: true
+update.wled_firmware:
+  disabled: true
+update.wled_firmware_2:
+  disabled: true
+climate.cubee_th123w_7869_thermostat:
+  disabled: false
+  sort_order: 8
+  hidden: false
+  excluded: false
+  friendly_name: "\u0422\u0435\u0440\u043C\u043E\u0441\u0442\u0430\u0442"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+humidifier.deerma_jsq5_c8cc_humidifier:
+  disabled: false
+  sort_order: 5
+sensor.deerma_jsq5_c8cc_relative_humidity:
+  disabled: true
+sensor.deerma_jsq5_c8cc_temperature:
+  disabled: false
+  sort_order: 7
+light.deerma_jsq5_c8cc_indicator_light:
+  disabled: true

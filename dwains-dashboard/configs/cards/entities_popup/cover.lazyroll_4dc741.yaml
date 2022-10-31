@@ -1,0 +1,4 @@
+entity: cover.lazyroll_4dc741
+show_buttons_control: true
+show_position_control: false
+type: custom:mushroom-cover-card

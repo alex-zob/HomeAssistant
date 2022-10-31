@@ -1,0 +1,9 @@
+blueprint: replace_mushroom_person_card.yaml
+card:
+  entity: $replace_with_input_entity$
+  hide_name: false
+  hide_state: false
+  name: $replace_with_input_name$
+  type: custom:mushroom-person-card
+  use_entity_picture: true
+type: custom:dwains-blueprint-card
