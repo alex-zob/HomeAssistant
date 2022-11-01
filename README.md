@@ -33,7 +33,7 @@
 ### Lovelace
 1. Настройка с нуля используя карты [Mushroom](https://github.com/piitaya/lovelace-mushroom).
 ### Видео-наблюдение
-1. Камера [Tapo tc70](https://www.tp-link.com/ru/home-networking/cloud-camera/tc70/), интеграции [go2rtc]:(https://github.com/AlexxIT/go2rtc) и [Generic camera](https://www.home-assistant.io/integrations/generic/)
+1. Камера [Tapo tc70](https://www.tp-link.com/ru/home-networking/cloud-camera/tc70/), интеграция [Tapo cameras](https://github.com/JurajNyiri/HomeAssistant-Tapo-Control)
 ## В планах на будущее
 1. Энерномониторинг.
 2. Резервирование.
@@ -43,6 +43,7 @@
 В процессе наполнения
 # Как связаться
 [Telegram](https://t.me/alex_zob)
+## Если мой конфиг вдохновил на новые идеи
 <a href="https://www.buymeacoffee.com/8tyfmdy2bnG" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 
