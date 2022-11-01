@@ -25,6 +25,11 @@ homeassistant:
   allowlist_external_dirs: #папка для сохранения фото с камеры
     - /config/FOTO
 # Example configuration.yaml entry
+folder_watcher:
+  - folder: /config/FOTO
+    patterns:
+      - '*.mp4'
+      - '*.jpg'
 conversation: #интенты для Алисы
   intents:
     # менять нужно entity_id до двоеточия, после двоеточия ничего менять не надо!
@@ -37,7 +42,7 @@ telegram_bot: #тклеграмм
       - !secret id_user_tg_1
       - !secret id_user_tg_2
       - !secret id_group_bot
-      - !secret id_group_anon
+      - !secret id_group_vid
 notify: #служба уведомлений
   - name: Alexey
     platform: telegram
@@ -48,9 +53,9 @@ notify: #служба уведомлений
   - name: Group_bot
     platform: telegram
     chat_id: !secret id_group_bot
-  - name: Group_anon
+  - name: Group_vid
     platform: telegram
-    chat_id: !secret id_group_anon
+    chat_id: !secret id_group_vid
 recorder: #БД 
   db_url: !secret db_url_mary
   commit_interval: 60

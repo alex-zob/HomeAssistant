@@ -1,5 +1,7 @@
 cover.lazyroll_4dc741:
   custom_popup: true
+  disabled: false
+  sort_order: 4
 person.mariia_zobnina:
   hidden: false
 person.aleksei_zobnin:
@@ -18,6 +20,7 @@ media_player.yandex_station_ff98f0293d539c959187ecd2:
   custom_card: false
   custom_popup: false
   devices_sort_order: 3
+  sort_order: 5
 media_player.yandex_station_04207894c12008280310:
   devices_sort_order: 2
   hidden: false
@@ -150,6 +153,17 @@ climate.cubee_th123w_7869_thermostat:
 humidifier.deerma_jsq5_c8cc_humidifier:
   disabled: false
   sort_order: 5
+  hidden: false
+  excluded: false
+  friendly_name: "\u0423\u0432\u043B\u0430\u0436\u043D\u0438\u0442\u0435\u043B\u044C"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
 sensor.deerma_jsq5_c8cc_relative_humidity:
   disabled: true
 sensor.deerma_jsq5_c8cc_temperature:
@@ -157,3 +171,340 @@ sensor.deerma_jsq5_c8cc_temperature:
   sort_order: 7
 light.deerma_jsq5_c8cc_indicator_light:
   disabled: true
+binary_sensor.400090521350005701_bsh_common_status_remotecontrolstartallowed:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_bsh_common_status_remotecontrolactive:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_bsh_common_status_doorstate:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_dishcare_dishwasher_option_hygieneplus:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_dishcare_dishwasher_option_extrarinse:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_dishcare_dishwasher_option_silenceondemand:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_dishcare_dishwasher_option_variospeed:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_connected:
+  hidden: true
+  disabled: true
+binary_sensor.400090521350005701_bsh_common_option_remainingprogramtimeisestimated:
+  excluded: true
+  disabled: true
+switch.0x158d00053ee70c_switch:
+  disabled: true
+sensor.0x158d00053ee70c_action:
+  disabled: true
+binary_sensor.0x158d00068aca37_contact:
+  disabled: false
+  sort_order: 2
+sensor.0x158d00068aca37_battery:
+  disabled: true
+light.svet_na_kukhne:
+  disabled: false
+  sort_order: 8
+sensor.0x158d00040cb32a_temperature:
+  disabled: false
+  sort_order: 7
+sensor.0x158d00040cb32a_humidity:
+  disabled: false
+  sort_order: 6
+sensor.0x158d00040cb32a_battery:
+  disabled: true
+sensor.0x158d00053ee70c_zigbee:
+  disabled: true
+sensor.0x158d00068aca37_zigbee:
+  disabled: true
+sensor.0x158d00040cb32a_zigbee:
+  disabled: true
+vacuum.mijia_v2_38d7_robot_cleaner:
+  disabled: false
+  sort_order: 1
+sensor.lazyroll_4dc741_ip:
+  disabled: true
+sensor.lazyroll_4dc741_rssi:
+  disabled: true
+sensor.lazyroll_4dc741_uptime:
+  disabled: true
+sensor.lazyroll_4dc741_voltage:
+  disabled: true
+binary_sensor.sensor_dv:
+  disabled: true
+sensor.mijia_v2_38d7_filter_life_level:
+  disabled: true
+sensor.mijia_v2_38d7_filter_left_time:
+  disabled: true
+sensor.mijia_v2_38d7_battery_level:
+  disabled: true
+sensor.mijia_v2_38d7_charging_state:
+  disabled: true
+sensor.mijia_v2_38d7_brush_life_level:
+  disabled: true
+sensor.mijia_v2_38d7_brush_left_time:
+  disabled: true
+sensor.mijia_v2_38d7_brush_life_level_2:
+  disabled: true
+sensor.mijia_v2_38d7_brush_left_time_2:
+  disabled: true
+switch.400090521350005701_bsh_common_setting_powerstate:
+  disabled: true
+sensor.400090521350005701_selected_program:
+  disabled: false
+  hidden: true
+sensor.400090521350005701_bsh_common_option_startinrelative:
+  disabled: true
+sensor.400090521350005701_bsh_common_status_operationstate:
+  disabled: true
+sensor.400090521350005701_bsh_common_setting_powerstate:
+  disabled: true
+select.400090521350005701_programs:
+  disabled: false
+  sort_order: 3
+button.400090521350005701_start_pause:
+  disabled: true
+button.400090521350005701_stop:
+  disabled: true
+number.400090521350005701_bsh_common_option_startinrelative:
+  disabled: true
+switch.400090521350005701_dishcare_dishwasher_option_hygieneplus:
+  disabled: true
+sensor.400090521350005701_active_program:
+  disabled: true
+sensor.400090521350005701_bsh_common_option_programprogress:
+  disabled: true
+sensor.400090521350005701_bsh_common_option_remainingprogramtime:
+  disabled: true
+sensor.400090521350005701_bsh_common_option_energyforecast:
+  disabled: true
+sensor.400090521350005701_bsh_common_option_waterforecast:
+  disabled: true
+switch.400090521350005701_dishcare_dishwasher_option_silenceondemand:
+  disabled: true
+binary_sensor.0x158d00067ff4ad_contact:
+  disabled: true
+binary_sensor.0x158d000423b34f_motion:
+  disabled: false
+  sort_order: 1
+  hidden: false
+  excluded: false
+  friendly_name: "\u0414\u0430\u0442\u0447\u0438\u043A \u0434\u0432\u0438\u0436\u0435\
+    \u043D\u0438\u044F"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+sensor.0x158d000423b34f_battery:
+  disabled: true
+sensor.0x158d000423b34f_illuminance:
+  disabled: true
+sensor.0x158d00067ff4ad_battery:
+  disabled: true
+switch.0x158d0004a005e6_channel_1:
+  disabled: true
+switch.0x158d0004a005e6_channel_2:
+  disabled: true
+sensor.0x158d0004a005e6_action:
+  disabled: true
+light.svet_v_koridore:
+  disabled: false
+  sort_order: 6
+sensor.0x158d000423b34f_zigbee:
+  disabled: true
+sensor.0x158d00067ff4ad_zigbee:
+  disabled: true
+sensor.0x158d0004a005e6_zigbee:
+  disabled: true
+button.domofon_restart:
+  disabled: true
+button.domofon_accept_call:
+  disabled: false
+  sort_order: 5
+  hidden: true
+  excluded: false
+  friendly_name: "\u041F\u0440\u0438\u043D\u044F\u0442\u044C \u0432\u044B\u0437\u043E\
+    \u0432"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+button.domofon_reject_call:
+  disabled: false
+  sort_order: 8
+  hidden: true
+  excluded: false
+  friendly_name: "\u041E\u0442\u043A\u043B\u043E\u043D\u0438\u0442\u044C \u0432\u044B\
+    \u0437\u043E\u0432"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+number.domofon_delay_before_answer:
+  disabled: true
+number.domofon_answer_on_time:
+  disabled: true
+number.domofon_open_on_time:
+  disabled: true
+number.domofon_delay_after_open:
+  disabled: false
+  hidden: true
+switch.domofon_automatically_open_once:
+  disabled: true
+switch.domofon_automatically_open:
+  disabled: true
+switch.domofon_automatically_reject:
+  disabled: true
+binary_sensor.domofon_button:
+  disabled: true
+sensor.domofon_heap_size:
+  disabled: true
+number.domofon_led_brightness:
+  disabled: true
+switch.domofon_mute_sound:
+  disabled: false
+  sort_order: 3
+  hidden: false
+  excluded: false
+  friendly_name: "\u0417\u0432\u0443\u043A \u0434\u043E\u043C\u043E\u0444\u043E\u043D\
+    \u0430"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+switch.domofon_mute_sound_once:
+  disabled: true
+sensor.domofon_uptime:
+  disabled: true
+binary_sensor.domofon_incoming_call:
+  disabled: true
+camera.tapo_camera_9e74_hd_stream:
+  disabled: false
+  sort_order: 2
+camera.tapo_camera_9e74_sd_stream:
+  disabled: true
+number.tapo_camera_9e74_movement_angle:
+  disabled: true
+button.tapo_camera_9e74_reboot:
+  disabled: true
+button.tapo_camera_9e74_format_sd_card:
+  disabled: true
+button.tapo_camera_9e74_manual_alarm_start:
+  disabled: true
+button.tapo_camera_9e74_manual_alarm_stop:
+  disabled: true
+button.tapo_camera_9e74_sync_time:
+  disabled: true
+button.tapo_camera_9e74_calibrate:
+  disabled: true
+button.tapo_camera_9e74_move_up:
+  disabled: true
+button.tapo_camera_9e74_move_down:
+  disabled: true
+button.tapo_camera_9e74_move_right:
+  disabled: true
+button.tapo_camera_9e74_move_left:
+  disabled: true
+select.tapo_camera_9e74_night_vision:
+  disabled: true
+select.tapo_camera_9e74_automatic_alarm:
+  disabled: true
+select.tapo_camera_9e74_light_frequency:
+  disabled: true
+select.tapo_camera_9e74_motion_detection:
+  disabled: false
+  hidden: true
+select.tapo_camera_9e74_move_to_preset:
+  disabled: true
+switch.tapo_camera_9e74_privacy:
+  disabled: true
+switch.tapo_camera_9e74_lens_distortion_correction:
+  disabled: true
+switch.tapo_camera_9e74_indicator_led:
+  disabled: true
+switch.tapo_camera_9e74_flip:
+  disabled: true
+switch.tapo_camera_9e74_auto_track:
+  disabled: true
+binary_sensor.tapo_camera_9e74_motion:
+  disabled: false
+  sort_order: 3
+  hidden: false
+  excluded: false
+  friendly_name: "\u0414\u0432\u0438\u0436\u0435\u043D\u0438\u0435 \u043A\u0430\u043C\
+    \u0435\u0440\u0430"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+siren.domofon_mute_sound:
+  hidden: false
+  excluded: false
+  disabled: false
+  friendly_name: "\u0417\u0432\u0443\u043A \u0434\u043E\u043C\u043E\u0444\u043E\u043D\
+    \u0430"
+  col_span: '1'
+  row_span: '1'
+  col_span_lg: '1'
+  row_span_lg: '1'
+  col_span_xl: '1'
+  row_span_xl: '1'
+  custom_card: false
+  custom_popup: false
+  sort_order: 4
+binary_sensor.signalizatsiia_starline_hood:
+  sort_order: 3
+  hidden: true
+binary_sensor.signalizatsiia_starline_alarm:
+  sort_order: 5
+binary_sensor.signalizatsiia_starline_doors:
+  sort_order: 3
+device_tracker.signalizatsiia_starline_location:
+  sort_order: 6
+lock.signalizatsiia_starline_security:
+  sort_order: 2
+sensor.signalizatsiia_starline_battery:
+  sort_order: 9
+sensor.signalizatsiia_starline_balance:
+  sort_order: 12
+sensor.signalizatsiia_starline_interior_temperature:
+  sort_order: 8
+sensor.signalizatsiia_starline_engine_temperature:
+  sort_order: 7
+sensor.signalizatsiia_starline_fuel_volume:
+  sort_order: 13
+sensor.signalizatsiia_starline_obd_errors:
+  sort_order: 4
+sensor.signalizatsiia_starline_mileage:
+  sort_order: 11
+  hidden: false
+switch.signalizatsiia_starline_engine:
+  sort_order: 1
+switch.signalizatsiia_starline_horn:
+  sort_order: 14
+  hidden: true

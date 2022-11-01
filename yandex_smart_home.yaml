@@ -5,6 +5,7 @@
       user_id: !secret user_id_yandex
   settings: #указываем настройки общие
     beta: true # принимаем участие в бете, например для book датчиков
+    cloud_stream: true
   filter: #филтр устройств идущих в УДЯ
     exclude_domains: #исключаем типы устройства
       - media_player
@@ -18,12 +19,15 @@
       - humidifier
       - climate
       - vacuum
+      - camera
       - automation
       - scene
       - button
       - input_button
       - binary_sensor
     include_entities: #разрешаем конкретное устройство
+      #- camera.tapo_camera_9e74_hd_stream
+      - camera.localhost
       - switch.400090521350005701_bsh_common_setting_powerstate
       - switch.rozetka
       - binary_sensor.0x158d00067ff4ad_contact

@@ -9,10 +9,15 @@
           "title": "Home",
           "cards": [
             {
-              "type": "custom:mushroom-chips-card",
-              "chips": [
+              "type": "vertical-stack",
+              "cards": [
                 {
-                  "type": "back"
+                  "type": "custom:mushroom-chips-card",
+                  "chips": [
+                    {
+                      "type": "back"
+                    }
+                  ]
                 }
               ]
             }

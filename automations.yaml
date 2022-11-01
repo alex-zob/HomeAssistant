@@ -283,6 +283,7 @@
       - '{{"\U0001F321"}} Термостат:/thermostat, {{"\U0001F9F9"}} Уборка:/vacuum'
       - '{{"\U0001F4F2"}} Домофон:/donfon, {{"\U0001F4FA"}} Мультимедиа:/tv'
       - Сделать фото c камеры:/camera
+      - Видео с камеры:/video
       - "\U0001F698 Машина:/avto"
       - '{{"\U0001F5D9"}} Закрыть меню:/close'
   initial_state: true
@@ -445,6 +446,7 @@
       - '{{"\U0001F321"}} Термостат:/thermostat, {{"\U0001F9F9"}} Уборка:/vacuum'
       - '{{"\U0001F4F2"}} Домофон:/donfon, {{"\U0001F4FA"}} Мультимедиа:/tv'
       - Сделать фото c камеры:/camera
+      - Видео с камеры:/video
       - "\U0001F698 Машина:/avto"
       - '{{"\U0001F5D9"}} Закрыть меню:/close'
   initial_state: true
@@ -1967,11 +1969,15 @@
       message_id: last
       message: Ожидайте...
   - service: camera.snapshot
-    target:
-      entity_id: camera.my_camera
     data:
       filename: /config/FOTO/ss_camera.jpg
-  - delay: 00:00:05
+    target:
+      entity_id: camera.tapo_camera_9e74_hd_stream
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 4
+      milliseconds: 0
   - service: telegram_bot.edit_message
     data_template:
       chat_id: '{{ trigger.event.data.chat_id }}'
@@ -3636,4 +3642,100 @@
         масло
 
         '
+  mode: single
+- id: '1667247176720'
+  alias: Видео с камеры
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      data: /video
+  condition: []
+  action:
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Ожидайте...
+  - service: camera.record
+    data:
+      filename: /config/FOTO/Video.mp4
+      duration: 10
+      lookback: 5
+    target:
+      entity_id: camera.tapo_camera_9e74_hd_stream
+  - wait_for_trigger:
+    - platform: event
+      event_type: folder_watcher
+      event_data:
+        event_type: moved
+        dest_file: Video.mp4
+  - service: telegram_bot.edit_message
+    data_template:
+      chat_id: '{{ trigger.event.data.chat_id }}'
+      message_id: last
+      message: Вот видео, которое вы просили
+  - service: telegram_bot.send_video
+    data:
+      target: '{{ trigger.event.data.chat_id }}'
+      file: /config/FOTO/Video.mp4
+  mode: single
+- id: '1667247936306'
+  alias: Видео с камеры (тестовая)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - camera.localhost
+    from: idle
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.kolo_home_person
+    above: '0'
+  action:
+  - service: camera.record
+    data:
+      filename: /config/FOTO/Video.mp4
+      duration: 10
+      lookback: 5
+    target:
+      entity_id: camera.localhost
+  - delay: 00:00:20
+  - service: telegram_bot.send_video
+    data:
+      target: notify.group_bot
+      file: /config/FOTO/Video.mp4
+  mode: single
+- id: '1667315412820'
+  alias: Видео с камеры (в общий чат)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.tapo_camera_9e74_motion
+    to: 'on'
+  condition: []
+  action:
+  - service: camera.record
+    data:
+      filename: /config/FOTO/Video.mp4
+      duration: 20
+      lookback: 10
+    target:
+      entity_id: camera.tapo_camera_9e74_hd_stream
+  - wait_for_trigger:
+    - platform: event
+      event_type: folder_watcher
+      event_data:
+        event_type: moved
+        dest_file: Video.mp4
+  - service: notify.Group_vid
+    data:
+      title: Видео
+      message: Видео
+      data:
+        video:
+        - file: /config/FOTO/Video.mp4
+          caption: '{{states(''sensor.time_date'')}}'
   mode: single

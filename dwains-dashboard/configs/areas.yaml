@@ -1,4 +1,4 @@
 tualet:
   icon: ''
   floor: ''
-  disabled: true
+  disabled: false
