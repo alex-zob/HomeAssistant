@@ -69,7 +69,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     model = str(config.get(CONF_MODEL) or '')
     spec = hass.data[DOMAIN]['miot_specs'].get(model)
     entities = []
-    if model.find('mrbond.airer') >= 0:
+    if model in ['mrbond.airer.m1s', 'mrbond.airer.m1pro']:
         pass
     elif isinstance(spec, MiotSpec):
         for srv in spec.get_services(ENTITY_DOMAIN, 'ir_light_control', 'light_bath_heater'):
@@ -78,9 +78,10 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                 continue
             elif not srv.get_property('on'):
                 continue
-            elif spec.get_service('ptc_bath_heater'):
-                # only sub light
-                continue
+            elif ptc := spec.get_service('ptc_bath_heater'):
+                if spec.get_service('switch') or ptc.get_property('on', 'mode', 'target_temperature'):
+                    # only sub light
+                    continue
             entities.append(MiotLightEntity(config, srv))
     for entity in entities:
         hass.data[DOMAIN]['entities'][entity.unique_id] = entity
@@ -110,13 +111,22 @@ class MiotLightEntity(MiotToggleEntity, LightEntity):
         if self._prop_brightness:
             self._supported_features |= SUPPORT_BRIGHTNESS
             self._attr_supported_color_modes.add(COLOR_MODE_BRIGHTNESS)
+        self._is_percentage_color_temp = None
         if self._prop_color_temp:
             self._supported_features |= SUPPORT_COLOR_TEMP
             self._attr_supported_color_modes.add(COLOR_MODE_COLOR_TEMP)
-            self._vars['color_temp_min'] = self._prop_color_temp.range_min() or 3000
-            self._vars['color_temp_max'] = self._prop_color_temp.range_max() or 5700
-            self._attr_min_mireds = self.translate_mired(self._vars['color_temp_max'])
-            self._attr_max_mireds = self.translate_mired(self._vars['color_temp_min'])
+            self._is_percentage_color_temp = self._prop_color_temp.unit in ['percentage', '%']
+            if self._is_percentage_color_temp:
+                # issues/870
+                self._vars['color_temp_min'] = self._prop_color_temp.range_min()
+                self._vars['color_temp_max'] = self._prop_color_temp.range_max()
+                self._attr_min_mireds = self._vars['color_temp_min']
+                self._attr_max_mireds = self._vars['color_temp_max']
+            else:
+                self._vars['color_temp_min'] = self._prop_color_temp.range_min() or 3000
+                self._vars['color_temp_max'] = self._prop_color_temp.range_max() or 5700
+                self._attr_min_mireds = self.translate_mired(self._vars['color_temp_max'])
+                self._attr_max_mireds = self.translate_mired(self._vars['color_temp_min'])
             self._vars['color_temp_sum'] = self._vars['color_temp_min'] + self._vars['color_temp_max']
             self._vars['mireds_sum'] = self._attr_min_mireds + self._attr_max_mireds
         if self._prop_color:
@@ -265,8 +275,10 @@ class MiotLightEntity(MiotToggleEntity, LightEntity):
             num = self._vars.get('color_temp_sum') - num
         return self.translate_mired(num)
 
-    @staticmethod
-    def translate_mired(num):
+    def translate_mired(self, num):
+        if self._is_percentage_color_temp:
+            # issues/870
+            return num
         try:
             return round(1000000 / num)
         except TypeError:

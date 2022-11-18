@@ -50,6 +50,8 @@
     #     value_template: "{% if states('sensor.tec_temp_zal')|int < 20 %} Холодно {% elif states('sensor.tec_temp_zal')|int <23 %} Прохладно {% elif states('sensor.tec_temp_zal')|int <25 %} Комфортно {% elif states('sensor.tec_temp_zal')|int >= 25 %} Жарко {% endif%}"
     #   sost_temp_cor:
     #     value_template: "{% if states('sensor.temp_cor')|int < 20 %} Холодно {% elif states('sensor.temp_cor')|int <23 %} Прохладно {% elif states('sensor.temp_cor')|int <25 %} Комфортно {% elif states('sensor.temp_cor')|int >= 25 %} Жарко {% endif%}"
+      mute_station:
+        value_template: "{{state_attr('media_player.yandex_station_04207894c12008280310', 'is_volume_muted')}}"
       posmash:
         value_template: "{% if is_state('sensor.400090521350005701_bsh_common_status_operationstate','BSH.Common.EnumType.OperationState.Run')%} off {% else%} on {% endif%}"
       temp_cor:

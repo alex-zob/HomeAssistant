@@ -11,6 +11,8 @@
       - light
       - humidifier
     include_entities:
+      - input_boolean.strimming
+      - camera.tapo_camera_9e74_hd_stream
       - sensor.0x158d00040cb32a_temperature
       - sensor.0x158d00040cb32a_humidity
       - binary_sensor.0x158d00068aca37_contact
@@ -32,6 +34,7 @@
     exclude_entities:
       - light.deerma_jsq5_c8cc_indicator_light
       - light.wled_lamp
+      - light.ledfx_localhost_wled
 #   entity_config:
 #     binary_sensor.domofon_incoming_call:
 #       linked_doorbell_sensor: binary_sensor.domofon_incoming_call

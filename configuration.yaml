@@ -20,6 +20,11 @@ home_connect_alt:
 frontend:
   themes: !include_dir_merge_named themes
 #browser_mod:
+media_player:
+  - platform: mpd
+    name: "MPD MopiDi"
+    host: localhost
+    port: 6600
 homeassistant:
   customize: !include customize.yaml
   allowlist_external_dirs: #папка для сохранения фото с камеры

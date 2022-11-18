@@ -1,6 +1,7 @@
 """Config flow to configure Xiaomi Miot."""
 import logging
 import re
+import copy
 import requests
 import voluptuous as vol
 
@@ -122,7 +123,8 @@ async def check_xiaomi_account(hass, user_input, errors, renew_devices=False):
         if isinstance(exc, MiCloudAccessDenied) and mic:
             if url := mic.attrs.pop('notificationUrl', None):
                 err = f'The login of Xiaomi account needs security verification. [Click here]({url}) to continue!\n' \
-                      f'本次登陆小米账号需要安全验证，[点击这里]({url})继续！'
+                      f'本次登陆小米账号需要安全验证，[点击这里]({url})继续！你需要在与HA宿主机同局域网的设备下完成安全验证，' \
+                      '如果你使用的是云服务器，将无法验证通过。'
                 persistent_notification.create(
                     hass,
                     err,
@@ -155,16 +157,20 @@ async def get_cloud_filter_schema(hass, user_input, errors, schema=None, via_did
     else:
         grp = {}
         vls = {}
-        fls = ['did'] if via_did else ['model', 'ssid', 'bssid']
+        fls = ['did'] if via_did else ['model', 'home_id', 'ssid', 'bssid']
         for d in dvs:
             for f in fls:
                 v = d.get(f)
+                if not grp:
+                    _LOGGER.warning('get_cloud_filter_schema: %s', d)
                 if v is None:
                     continue
                 grp.setdefault(v, 0)
                 grp[v] += 1
                 vls.setdefault(f, {})
                 des = '<empty>' if v == '' else v
+                if f == 'home_id':
+                    des = d.get('home_name') or des
                 if f in ['did']:
                     if MiotCloud.is_hide(d):
                         continue
@@ -345,7 +351,7 @@ class XiaomiMiotFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id='cloud_filter',
             data_schema=schema,
             errors=errors,
-            description_placeholders=self.hass.data[DOMAIN].pop('placeholders', None),
+            description_placeholders=self.hass.data[DOMAIN].pop('placeholders', {'tip': ''}),
         )
 
     async def async_step_customizing(self, user_input=None):
@@ -353,7 +359,7 @@ class XiaomiMiotFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         via = self.context.get('customizing_via') or 'customizing_entity'
         self.context['customizing_via'] = via
         entry = await self.async_set_unique_id(f'{DOMAIN}-customizes')
-        entry_data = dict(entry.data) if entry else {}
+        entry_data = copy.deepcopy(dict(entry.data) if entry else {})
         customizes = {}
         errors = {}
         schema = {}
@@ -395,6 +401,7 @@ class XiaomiMiotFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         last_step = self.context.pop('last_step', False)
         customize_key = self.context.pop('customize_key', None)
         if last_step and customize_key:
+            reset = user_input.pop('reset_customizes', None)
             b2s = user_input.pop('bool2selects', None) or []
             for k in b2s:
                 user_input[k] = True
@@ -404,8 +411,11 @@ class XiaomiMiotFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 for k, v in user_input.items()
                 if v not in [' ', '', None, vol.UNDEFINED]
             }
+            if reset:
+                entry_data[via].pop(customize_key, None)
             if entry:
                 self.hass.config_entries.async_update_entry(entry, data=entry_data)
+                await self.hass.config_entries.async_reload(entry.entry_id)
                 tip = f'```yaml\n{yaml.dump(entry_data)}\n```'
                 return self.async_abort(
                     reason='config_saved',
@@ -508,6 +518,9 @@ class XiaomiMiotFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(k, default=customizes.get(k, vol.UNDEFINED), description=k): v
                 for k, v in options.items()
             })
+            schema.update({
+                vol.Optional('reset_customizes', default=False): cv.boolean,
+            })
             customizes.pop('bool2selects', None)
             customizes.pop('extend_miot_specs', None)
             if customizes:
@@ -605,6 +618,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required(CONF_CONN_MODE, default=user_input.get(CONF_CONN_MODE, DEFAULT_CONN_MODE)):
                 vol.In(CONN_MODES),
             vol.Optional('renew_devices', default=user_input.get('renew_devices', False)): bool,
+            vol.Optional('disable_message', default=user_input.get('disable_message', False)): bool,
         })
         return self.async_show_form(
             step_id='cloud',
@@ -627,6 +641,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             cfg = prev_input['xiaomi_cloud'].to_config() or {}
             cfg.update({
                 CONF_CONN_MODE: prev_input.get(CONF_CONN_MODE),
+                'disable_message': prev_input.get('disable_message'),
                 **(user_input or {}),
             })
             self.hass.config_entries.async_update_entry(
@@ -640,7 +655,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id='cloud_filter',
             data_schema=schema,
             errors=errors,
-            description_placeholders=self.hass.data[DOMAIN].pop('placeholders', None),
+            description_placeholders=self.hass.data[DOMAIN].pop('placeholders', {'tip': ''}),
         )
 
 
@@ -667,6 +682,7 @@ def get_customize_options(hass, options={}, bool2selects=[], entity_id='', model
         if entity_class in ['MihomeMessageSensor']:
             options.update({
                 'filter_home': cv.string,
+                'exclude_type': cv.string,
             })
         if entity_class in ['XiaoaiConversationSensor']:
             options.update({
@@ -744,6 +760,9 @@ def get_customize_options(hass, options={}, bool2selects=[], entity_id='', model
 
     if domain == 'number':
         bool2selects.extend(['restore_state'])
+
+    if domain == 'device_tracker':
+        bool2selects.extend(['disable_location_name'])
 
     if 'yeelink.' in model:
         options.update({

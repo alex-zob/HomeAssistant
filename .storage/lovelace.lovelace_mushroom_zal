@@ -15,6 +15,10 @@
                   "type": "back"
                 }
               ]
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.yandex_station_04207894c12008280310"
             }
           ]
         }

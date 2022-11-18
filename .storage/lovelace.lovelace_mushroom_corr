@@ -18,6 +18,16 @@
                       "type": "back"
                     }
                   ]
+                },
+                {
+                  "camera_view": "auto",
+                  "type": "picture-glance",
+                  "entities": [
+                    "sensor.time",
+                    "sensor.date"
+                  ],
+                  "title": "Камера",
+                  "camera_image": "camera.tapo_camera_9e74_hd_stream"
                 }
               ]
             }

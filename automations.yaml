@@ -196,7 +196,7 @@
         milliseconds: 0
     - condition: time
       before: '20:00'
-      after: '18:30'
+      after: '16:30:00'
   action:
   - service: light.turn_on
     data: {}
@@ -3319,7 +3319,7 @@
   description: ''
   trigger:
   - platform: time
-    at: '17:00:00'
+    at: '16:45:00'
   condition:
   - condition: state
     entity_id: cover.lazyroll_4dc741
@@ -3720,8 +3720,8 @@
   - service: camera.record
     data:
       filename: /config/FOTO/Video.mp4
-      duration: 20
-      lookback: 10
+      duration: 30
+      lookback: 7
     target:
       entity_id: camera.tapo_camera_9e74_hd_stream
   - wait_for_trigger:
@@ -3738,4 +3738,146 @@
         video:
         - file: /config/FOTO/Video.mp4
           caption: '{{states(''sensor.time_date'')}}'
-  mode: single
+  mode: queued
+- id: '1668712512159'
+  alias: Яндекс колонка. Музыка. Стриминг. LedFX
+  description: Если Яндекс колонка начнет играть музыку и включится стриминг, то включится
+    светомузыка
+  trigger:
+  - platform: state
+    entity_id: media_player.mpd_mopidi
+    to: playing
+    id: 'MPD: Стриминг музыки включен'
+  - platform: state
+    entity_id: input_boolean.strimming
+    from: 'on'
+    to: 'off'
+    id: 'Переключатель: Стриминг музыки выключен'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  - platform: state
+    entity_id: media_player.yandex_station_04207894c12008280310
+    to: paused
+    from: playing
+    id: 'Яндекс станция: Музыка выключена'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: 'MPD: Стриминг музыки включен'
+      - condition: state
+        entity_id: input_boolean.strimming
+        state: 'on'
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.ledfx_localhost_wled
+        data: {}
+    - conditions:
+      - condition: trigger
+        id: 'Переключатель: Стриминг музыки выключен'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.ledfx_localhost_wled
+        data: {}
+    - conditions:
+      - condition: trigger
+        id: 'Яндекс станция: Музыка выключена'
+      sequence:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.strimming
+        data: {}
+    default: []
+  mode: parallel
+  max: 10
+- id: '1668712574297'
+  alias: Яндекс колонка. Музыка. Стриминг. Алиса
+  description: Включаем и выключаем стриминг музыки вручную
+  trigger:
+  - platform: state
+    entity_id: input_boolean.strimming
+    from: 'off'
+    to: 'on'
+    id: 'Переключатель: Стриминг включен'
+  - platform: state
+    entity_id: input_boolean.strimming
+    from: 'on'
+    to: 'off'
+    id: 'Переключатель: Стриминг выключен'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: 'Переключатель: Стриминг включен'
+      - condition: state
+        entity_id: media_player.yandex_station_04207894c12008280310
+        state: playing
+      sequence:
+      - service: media_player.select_source
+        target:
+          entity_id: media_player.yandex_station_04207894c12008280310
+        data:
+          source: MPD
+    - conditions:
+      - condition: trigger
+        id: 'Переключатель: Стриминг выключен'
+      sequence:
+      - service: media_player.select_source
+        target:
+          entity_id: media_player.yandex_station_04207894c12008280310
+        data:
+          source: Станция
+    - conditions:
+      - condition: trigger
+        id: 'Переключатель: Стриминг включен'
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.yandex_station_04207894c12008280310
+          state: playing
+      sequence:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.strimming
+        data: {}
+    default: []
+  mode: parallel
+  max: 10
+- id: '1668712595589'
+  alias: Яндекс колонка. Музыка. Стриминг. Включить звук
+  description: Яндекс колонка при включении стриминга по умолчанию выключает звук.
+    Если автоматизация включена, то выключенный звук будет включаться
+  trigger:
+  - platform: state
+    entity_id: input_boolean.strimming
+    from: 'off'
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+    id: 'Переключатель: Стриминг включен'
+  - platform: state
+    entity_id: media_player.mpd_mopidi
+    to: playing
+    id: 'MPD: Медиа плеер запущен'
+  condition:
+  - condition: state
+    state: 'True'
+    entity_id: sensor.mute_station
+  action:
+  - service: media_player.volume_mute
+    target:
+      entity_id: media_player.yandex_station_04207894c12008280310
+    data:
+      is_volume_muted: false
+  mode: parallel
+  max: 10

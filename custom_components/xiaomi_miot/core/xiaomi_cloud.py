@@ -13,7 +13,7 @@ from homeassistant.const import *
 from homeassistant.helpers.storage import Store
 from homeassistant.components import persistent_notification
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_XIAOMI_CLOUD
 from .utils import RC4
 from micloud import miutils
 from micloud.micloudexception import MiCloudException
@@ -30,8 +30,14 @@ ACCOUNT_BASE = 'https://account.xiaomi.com'
 
 class MiotCloud(micloud.MiCloud):
     def __init__(self, hass, username, password, country=None, sid=None):
-        super().__init__(username, password)
+        try:
+            super().__init__(username, password)
+        except (FileNotFoundError, KeyError):
+            self.timezone = 'GMT+00:00'
+
         self.hass = hass
+        self.username = username
+        self.password = password
         self.default_server = country or 'cn'
         self.sid = sid or 'xiaomiio'
         self.client_id = self.agent_id
@@ -287,7 +293,7 @@ class MiotCloud(micloud.MiCloud):
         dat = {}
         if filters is None:
             filters = {}
-        fls = ['ssid', 'bssid', 'model', 'did']
+        fls = ['ssid', 'bssid', 'home_id', 'model', 'did']
         dvs = await self.async_get_devices(renew=renew) or []
         for d in dvs:
             if not isinstance(d, dict):
@@ -665,3 +671,13 @@ class MiotCloud(micloud.MiCloud):
     @staticmethod
     def decrypt_data(pwd, data):
         return RC4(base64.b64decode(pwd)).init1024().crypt(base64.b64decode(data))
+
+    @staticmethod
+    def all_clouds(hass):
+        cls = {}
+        for k, v in hass.data[DOMAIN].items():
+            if isinstance(v, dict):
+                v = v.get(CONF_XIAOMI_CLOUD)
+            if isinstance(v, MiotCloud):
+                cls[v.unique_id] = v
+        return list(cls.values())

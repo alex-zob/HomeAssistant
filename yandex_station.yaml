@@ -2,3 +2,6 @@
   recognition_lang: ru-RU # управление устройствами из УДЯ
   tts_service_name: alice_say
   include:
+  media_players:
+    - entity_id: media_player.mpd_mopidi
+      name: MPD

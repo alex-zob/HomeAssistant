@@ -92,6 +92,29 @@
                     },
                     {
                       "type": "template",
+                      "entity": "sensor.memory_use_percent",
+                      "icon": "mdi:memory",
+                      "icon_color": "{%if states('sensor.memory_use_percent')|int >85%}red {%else%} green{%endif%}",
+                      "content": "{{states('sensor.memory_use_percent')}} %"
+                    },
+                    {
+                      "type": "template",
+                      "entity": "sensor.processor_use_percent",
+                      "icon_color": "{%if states('sensor.processor_use_percent')|int >60%}red {%else%} green{%endif%}",
+                      "icon": "mdi:cpu-64-bit",
+                      "double_tap_action": {
+                        "action": "none"
+                      },
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "content": "{{states('sensor.processor_use_percent')}} %"
+                    },
+                    {
+                      "type": "template",
                       "double_tap_action": {
                         "action": "none"
                       },

@@ -61,7 +61,8 @@ SERVICE_TO_METHOD = {}
 async def async_setup_entry(hass, config_entry, async_add_entities):
     cfg = hass.data[DOMAIN].get(config_entry.entry_id) or {}
     mic = cfg.get(CONF_XIAOMI_CLOUD)
-    if isinstance(mic, MiotCloud) and mic.user_id:
+    config_data = config_entry.data or {}
+    if isinstance(mic, MiotCloud) and mic.user_id and not config_data.get('disable_message'):
         hass.data[DOMAIN]['accounts'].setdefault(mic.user_id, {})
         if not hass.data[DOMAIN]['accounts'][mic.user_id].get('messenger'):
             entity = MihomeMessageSensor(hass, mic)
@@ -82,13 +83,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         entities.append(entity)
     elif isinstance(spec, MiotSpec):
         for srv in spec.get_services(
-            'battery', 'environment', 'tds_sensor', 'switch_sensor', 'vibration_sensor',
+            'battery', 'environment', 'tds_sensor', 'switch_sensor', 'vibration_sensor', 'occupancy_sensor',
             'temperature_humidity_sensor', 'illumination_sensor', 'gas_sensor', 'smoke_sensor',
             'router', 'lock', 'washer', 'printer', 'sleep_monitor', 'bed', 'walking_pad', 'treadmill',
             'oven', 'microwave_oven', 'health_pot', 'coffee_machine', 'multifunction_cooking_pot',
-            'cooker', 'induction_cooker', 'pressure_cooker', 'air_fryer', 'juicer', 'water_purifier',
+            'cooker', 'induction_cooker', 'pressure_cooker', 'air_fryer', 'juicer',
+            'water_purifier', 'dishwasher', 'fruit_vegetable_purifier',
             'pet_feeder', 'fridge_chamber', 'plant_monitor', 'germicidal_lamp', 'vital_signs',
-            'fruit_vegetable_purifier', 'sterilizer', 'steriliser', 'table',
+            'sterilizer', 'steriliser', 'table', 'dryer', 'clothes_dryer',
         ):
             if srv.name in ['lock']:
                 if not srv.get_property('operation_method', 'operation_id'):
@@ -162,6 +164,8 @@ class MiotSensorEntity(MiotEntity, SensorEntity):
             self._prop_state = miot_service.get_property('gas_concentration') or self._prop_state
         elif miot_service.name in ['smoke_sensor']:
             self._prop_state = miot_service.get_property('smoke_concentration') or self._prop_state
+        elif miot_service.name in ['occupancy_sensor']:
+            self._prop_state = miot_service.get_property('occupancy_status') or self._prop_state
 
         self._name = f'{self.device_name} {self._prop_state.friendly_desc}'
         self._attr_icon = self._miot_service.entity_icon
@@ -409,7 +413,6 @@ class BaseSensorSubEntity(BaseSubEntity, SensorEntity):
         kwargs.setdefault('domain', ENTITY_DOMAIN)
         self._attr_state_class = None
         super().__init__(parent, attr, option, **kwargs)
-        self._attr_native_unit_of_measurement = self._attr_unit_of_measurement
 
     @property
     def native_value(self):
@@ -457,7 +460,6 @@ class MiotSensorSubEntity(MiotPropertySubEntity, BaseSensorSubEntity):
     def __init__(self, parent, miot_property: MiotProperty, option=None):
         super().__init__(parent, miot_property, option, domain=ENTITY_DOMAIN)
         self._attr_state_class = miot_property.state_class
-        self._attr_native_unit_of_measurement = self._attr_unit_of_measurement
 
         self._prop_battery = None
         for s in self._miot_service.spec.get_services('battery', self._miot_service.name):
@@ -486,6 +488,8 @@ class MiotSensorSubEntity(MiotPropertySubEntity, BaseSensorSubEntity):
             svd = self.custom_config_number('value_ratio') or 0
             if svd:
                 val = round(float(val) * svd, 3)
+            elif self.device_class in [DEVICE_CLASS_HUMIDITY, DEVICE_CLASS_TEMPERATURE]:
+                val = round(float(val), 3)
         return val
 
 
@@ -566,6 +570,8 @@ class WaterPurifierYunmiSubEntity(BaseSubEntity):
 
 class MihomeMessageSensor(MiCoordinatorEntity, SensorEntity, RestoreEntity):
     _filter_homes = None
+    _exclude_types = None
+    _has_none_message = False
 
     def __init__(self, hass, cloud: MiotCloud):
         self.hass = hass
@@ -593,6 +599,7 @@ class MihomeMessageSensor(MiCoordinatorEntity, SensorEntity, RestoreEntity):
         await super().async_added_to_hass()
         self.hass.data[DOMAIN]['entities'][self.entity_id] = self
         self._filter_homes = self.custom_config_list('filter_home') or []
+        self._exclude_types = list(map(lambda x: int(x), self.custom_config_list('exclude_type', [13]) or []))
         if sec := self.custom_config_integer('interval_seconds'):
             self.coordinator.update_interval = timedelta(seconds=sec)
 
@@ -603,6 +610,7 @@ class MihomeMessageSensor(MiCoordinatorEntity, SensorEntity, RestoreEntity):
             self._attr_extra_state_attributes.update(state.attributes)
 
         self._attr_extra_state_attributes['filter_homes'] = self._filter_homes
+        self._attr_extra_state_attributes['exclude_types'] = self._exclude_types
         await self.coordinator.async_config_entry_first_refresh()
 
     async def async_will_remove_from_hass(self):
@@ -617,9 +625,12 @@ class MihomeMessageSensor(MiCoordinatorEntity, SensorEntity, RestoreEntity):
             return
         if old := self._attr_native_value:
             self._attr_extra_state_attributes['prev_message'] = old
-        tit = msg.get('title')
-        if con := msg.get('content'):
-            self._attr_native_value = f'{con}: {tit}'
+        con = msg.get('content')
+        if tit := msg.get('title'):
+            if con:
+                self._attr_native_value = f'{con}: {tit}'
+            else:
+                self._attr_native_value = tit
             logger = _LOGGER.info if old != self._attr_native_value else _LOGGER.debug
             logger('New xiaomi message for %s: %s', self.cloud.user_id, self._attr_native_value)
         tim = msg.get('ctime')
@@ -655,6 +666,9 @@ class MihomeMessageSensor(MiCoordinatorEntity, SensorEntity, RestoreEntity):
             home = hre.get('homeName')
             if self._filter_homes and home and home not in self._filter_homes:
                 continue
+            typ = m.get('type', 0)
+            if self._exclude_types and typ in self._exclude_types:
+                continue
             tim = m.get('ctime', 0)
             mid = m.get('msg_id', 0)
             if prev_time and tim < prev_time:
@@ -665,11 +679,14 @@ class MihomeMessageSensor(MiCoordinatorEntity, SensorEntity, RestoreEntity):
             m['roomName'] = hre.get('roomName')
             msg = m
             break
+        if not mls:
+            if not self._has_none_message:
+                _LOGGER.warning('Get xiaomi message for %s failed: %s', self.cloud.user_id, res)
+            self._has_none_message = True
         if msg:
             await self.async_set_message(msg)
             self.message = msg
-        if not msg.get('content'):
-            _LOGGER.info('Get xiaomi message for %s failed: %s', self.cloud.user_id, res)
+            self._has_none_message = False
         return msg
 
 

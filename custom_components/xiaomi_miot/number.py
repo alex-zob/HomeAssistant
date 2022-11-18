@@ -53,21 +53,21 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
 
 class MiotNumberEntity(MiotEntity, NumberEntity):
-    _attr_native_value = 0
-    _attr_native_unit_of_measurement = None
 
     def __init__(self, config, miot_service: MiotService):
         super().__init__(miot_service, config=config, logger=_LOGGER)
+        self._attr_native_value = 0
+        self._attr_native_unit_of_measurement = None
 
 
 class MiotNumberSubEntity(MiotPropertySubEntity, NumberEntity, RestoreEntity):
-    _attr_native_value = 0
 
     def __init__(self, parent, miot_property: MiotProperty, option=None):
         super().__init__(parent, miot_property, option, domain=ENTITY_DOMAIN)
         self._attr_native_max_value = self._miot_property.range_max()
         self._attr_native_min_value = self._miot_property.range_min()
         self._attr_native_step = self._miot_property.range_step()
+        self._attr_native_value = 0
         self._attr_native_unit_of_measurement = self._miot_property.unit_of_measurement
         self._is_restore = False
 
@@ -91,7 +91,7 @@ class MiotNumberSubEntity(MiotPropertySubEntity, NumberEntity, RestoreEntity):
     @property
     def native_value(self):
         val = self._miot_property.from_dict(self._state_attrs)
-        return self.cast_value(val)
+        return val
 
     def cast_value(self, val, default=None):
         try:
@@ -108,10 +108,6 @@ class MiotNumberSubEntity(MiotPropertySubEntity, NumberEntity, RestoreEntity):
             value = int(value)
         return self.set_parent_property(value)
 
-    def set_value(self, value):
-        """Set new value."""
-        return self.set_native_value(value)
-
 
 class MiotNumberActionSubEntity(MiotNumberSubEntity):
     def __init__(self, parent, miot_property: MiotProperty, miot_action: MiotAction, option=None):
@@ -125,7 +121,7 @@ class MiotNumberActionSubEntity(MiotNumberSubEntity):
         self._available = True
         self._attr_native_value = 0
 
-    def set_value(self, value: float):
+    def set_native_value(self, value):
         """Set new value."""
         val = int(value)
         ret = self.call_parent('call_action', self._miot_action, [val])

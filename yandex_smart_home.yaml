@@ -26,8 +26,8 @@
       - input_button
       - binary_sensor
     include_entities: #разрешаем конкретное устройство
-      #- camera.tapo_camera_9e74_hd_stream
-      - camera.localhost
+      - input_boolean.strimming
+      - camera.tapo_camera_9e74_hd_stream
       - switch.400090521350005701_bsh_common_setting_powerstate
       - switch.rozetka
       - binary_sensor.0x158d00067ff4ad_contact
@@ -41,6 +41,7 @@
       - cover.ventiliator
       - cover.lazyroll_4dc741
     exclude_entities: #исключаем конкретное устрлймтво
+     # - light.ledfx_localhost_wled
       - vacuum.pylesos
       - remote.yandex_station_108a8b32ebb8436babb450bf2bdbded8
   entity_config:
@@ -110,6 +111,18 @@
       properties:
         - type: temperature
           entity: sensor.a4c138898f05_temperature
+      modes: 
+        heat:
+          quiet: ['Sleep'] #ночной
+          normal: ['Home'] #обычный/нормальный
+          cool: ['Away']
+      custom_modes:
+        heat:
+          set_mode:
+            service: climate.set_preset_mode
+            entity_id: climate.cubee_th123w_7869_thermostat
+            data:
+              preset_mode: '{{ mode }}'
     light.wled_lamp:
       name: Светильник
       room: Зал

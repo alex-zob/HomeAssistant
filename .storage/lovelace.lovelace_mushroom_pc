@@ -20,6 +20,22 @@
                   "type": "back"
                 }
               ]
+            },
+            {
+              "type": "custom:mushroom-cover-card",
+              "entity": "cover.lazyroll_4dc741",
+              "layout": "vertical",
+              "fill_container": false,
+              "show_position_control": false,
+              "show_tilt_position_control": false,
+              "show_buttons_control": true,
+              "name": "Шторы",
+              "hold_action": {
+                "action": "none"
+              },
+              "double_tap_action": {
+                "action": "none"
+              }
             }
           ]
         }
